@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="{{ page.lang | default: 'ja' }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,6 +99,16 @@ window.MathJax = {
   .post-list { list-style: none; padding: 0; }
   .post-list li { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
   .post-list-date { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lang-badge {
+    display: inline-block; background: var(--header-bg); color: var(--muted);
+    font-size: 0.7rem; font-weight: 600; padding: 1px 8px; border-radius: 999px;
+    border: 1px solid var(--rule); letter-spacing: 0.05em;
+  }
+  .lang-switch { margin: 0 0 24px; font-size: 0.9rem; }
+  .lang-switch a {
+    display: inline-block; padding: 4px 14px; border: 1px solid var(--callout-border);
+    background: var(--callout-bg); border-radius: 999px; text-decoration: none;
+  }
 </style>
 </head>
 <body>

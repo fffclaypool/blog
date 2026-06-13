@@ -3,6 +3,11 @@ layout: post
 title: "情報検索の評価指標 — 数理的解説"
 description: "Precision / Recall から AP・MAP・nDCG・MRR まで、定義式で理解する"
 date: 2026-06-13
+lang: ja
+ref: ir-metrics
+permalink: /ja/information-retrieval-metrics/
+translation: /en/information-retrieval-metrics/
+translation_label: "English"
 ---
 
 本稿は、情報検索（Information Retrieval, IR）システムの性能を測る代表的な評価指標を、定義式とその意味を中心に数理的に整理したものである。集合ベースの指標から順位（ランキング）を考慮した指標、複数クエリにわたる集約、そしてオフライン評価の前提までを順に扱う。
