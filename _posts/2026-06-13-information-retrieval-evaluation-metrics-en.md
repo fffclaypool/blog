@@ -27,8 +27,6 @@ Each document $$d$$ is assumed to have a defined relevance with respect to the q
 
 The system returns results from $$D$$ (or as a ranked top-$$k$$ list). We write the returned set as $$R$$ and the set of truly relevant documents as $$\mathrm{Rel} = \{\, d : \mathrm{rel}(d) = 1 \,\}$$. When discussing ranking, consider the ordered list returned by the system, $$\pi = (d_{(1)}, d_{(2)}, \ldots, d_{(n)})$$, where $$d_{(i)}$$ is the document at rank $$i$$.
 
-> **Notation summary:** $$\lvert \cdot \rvert$$ denotes set cardinality, and $$\mathbf{1}[\cdot]$$ is the indicator function that returns 1 if its condition is true and 0 otherwise. $$\mathrm{rel}_i \equiv \mathrm{rel}(d_{(i)})$$ is the relevance of the document at rank $$i$$.
-
 ## 2. Foundational Quantities from the Confusion Matrix
 
 Under binary relevance, retrieval results can be classified in a $$2 \times 2$$ scheme along "retrieved or not" and "relevant or not."
