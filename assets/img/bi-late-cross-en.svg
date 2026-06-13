@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Comparison of Bi-Encoder, Late Interaction, and Cross-Encoder architectures">
+  <defs>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2f6fd0"/>
+    </marker>
+  </defs>
+
+  <!-- ===== (1) Bi-Encoder ===== -->
+  <text x="20" y="42" font-size="13" font-weight="700" fill="#1e54a8">① Bi-Encoder</text>
+  <rect x="20" y="66" width="44" height="28" rx="6" fill="#ffffff" stroke="#9bb7e0"/>
+  <text x="42" y="85" font-size="13" fill="#2b2b30" text-anchor="middle">q</text>
+  <rect x="20" y="136" width="44" height="28" rx="6" fill="#ffffff" stroke="#9bb7e0"/>
+  <text x="42" y="155" font-size="13" fill="#2b2b30" text-anchor="middle">d</text>
+  <rect x="118" y="60" width="104" height="40" rx="8" fill="#ffffff" stroke="#2f6fd0" stroke-width="1.6"/>
+  <text x="170" y="85" font-size="13" fill="#2b2b30" text-anchor="middle">Encoder</text>
+  <rect x="118" y="130" width="104" height="40" rx="8" fill="#ffffff" stroke="#2f6fd0" stroke-width="1.6"/>
+  <text x="170" y="155" font-size="13" fill="#2b2b30" text-anchor="middle">Encoder</text>
+  <rect x="312" y="68" width="30" height="24" rx="5" fill="#eef4fc" stroke="#2f6fd0"/>
+  <text x="357" y="85" font-size="12" fill="#6b6b70" text-anchor="start">u</text>
+  <rect x="312" y="138" width="30" height="24" rx="5" fill="#eef4fc" stroke="#2f6fd0"/>
+  <text x="357" y="155" font-size="12" fill="#6b6b70" text-anchor="start">v</text>
+  <rect x="448" y="92" width="104" height="46" rx="8" fill="#eef4fc" stroke="#cfe0f6" stroke-width="1.5"/>
+  <text x="500" y="113" font-size="13" fill="#2b2b30" text-anchor="middle">⟨u, v⟩</text>
+  <text x="500" y="130" font-size="10" fill="#6b6b70" text-anchor="middle">dot</text>
+  <rect x="596" y="92" width="104" height="46" rx="8" fill="#dbe7f8" stroke="#2f6fd0" stroke-width="1.6"/>
+  <text x="648" y="120" font-size="13" font-weight="700" fill="#1e54a8" text-anchor="middle">score</text>
+  <line x1="64" y1="80" x2="116" y2="80" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="64" y1="150" x2="116" y2="150" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="222" y1="80" x2="310" y2="80" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="222" y1="150" x2="310" y2="150" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="372" y1="80" x2="446" y2="108" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="372" y1="150" x2="446" y2="122" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="552" y1="115" x2="594" y2="115" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+
+  <line x1="12" y1="188" x2="708" y2="188" stroke="#ececef" stroke-width="1"/>
+
+  <!-- ===== (2) Late Interaction ===== -->
+  <text x="20" y="216" font-size="13" font-weight="700" fill="#1e54a8">② Late Interaction (ColBERT)</text>
+  <rect x="20" y="236" width="44" height="28" rx="6" fill="#ffffff" stroke="#9bb7e0"/>
+  <text x="42" y="255" font-size="13" fill="#2b2b30" text-anchor="middle">q</text>
+  <rect x="20" y="306" width="44" height="28" rx="6" fill="#ffffff" stroke="#9bb7e0"/>
+  <text x="42" y="325" font-size="13" fill="#2b2b30" text-anchor="middle">d</text>
+  <rect x="118" y="230" width="104" height="40" rx="8" fill="#ffffff" stroke="#2f6fd0" stroke-width="1.6"/>
+  <text x="170" y="255" font-size="13" fill="#2b2b30" text-anchor="middle">Encoder</text>
+  <rect x="118" y="300" width="104" height="40" rx="8" fill="#ffffff" stroke="#2f6fd0" stroke-width="1.6"/>
+  <text x="170" y="325" font-size="13" fill="#2b2b30" text-anchor="middle">Encoder</text>
+  <rect x="306" y="238" width="22" height="22" rx="4" fill="#eef4fc" stroke="#2f6fd0"/>
+  <rect x="334" y="238" width="22" height="22" rx="4" fill="#eef4fc" stroke="#2f6fd0"/>
+  <rect x="362" y="238" width="22" height="22" rx="4" fill="#eef4fc" stroke="#2f6fd0"/>
+  <rect x="306" y="308" width="22" height="22" rx="4" fill="#eef4fc" stroke="#2f6fd0"/>
+  <rect x="334" y="308" width="22" height="22" rx="4" fill="#eef4fc" stroke="#2f6fd0"/>
+  <rect x="362" y="308" width="22" height="22" rx="4" fill="#eef4fc" stroke="#2f6fd0"/>
+  <rect x="448" y="255" width="104" height="58" rx="8" fill="#eef4fc" stroke="#cfe0f6" stroke-width="1.5"/>
+  <text x="500" y="281" font-size="13" font-weight="700" fill="#2b2b30" text-anchor="middle">MaxSim</text>
+  <text x="500" y="299" font-size="10" fill="#6b6b70" text-anchor="middle">Σᵢ maxⱼ⟨uᵢ, vⱼ⟩</text>
+  <rect x="596" y="261" width="104" height="46" rx="8" fill="#dbe7f8" stroke="#2f6fd0" stroke-width="1.6"/>
+  <text x="648" y="289" font-size="13" font-weight="700" fill="#1e54a8" text-anchor="middle">score</text>
+  <line x1="64" y1="250" x2="116" y2="250" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="64" y1="320" x2="116" y2="320" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="222" y1="250" x2="302" y2="250" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="222" y1="320" x2="302" y2="320" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="390" y1="250" x2="446" y2="278" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="390" y1="320" x2="446" y2="292" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="552" y1="284" x2="594" y2="284" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+
+  <line x1="12" y1="360" x2="708" y2="360" stroke="#ececef" stroke-width="1"/>
+
+  <!-- ===== (3) Cross-Encoder ===== -->
+  <text x="20" y="388" font-size="13" font-weight="700" fill="#1e54a8">③ Cross-Encoder</text>
+  <rect x="20" y="406" width="86" height="30" rx="6" fill="#ffffff" stroke="#9bb7e0"/>
+  <text x="63" y="425" font-size="13" fill="#2b2b30" text-anchor="middle">[ q ; d ]</text>
+  <rect x="132" y="401" width="226" height="40" rx="8" fill="#ffffff" stroke="#2f6fd0" stroke-width="2"/>
+  <text x="245" y="425" font-size="12.5" fill="#2b2b30" text-anchor="middle">Encoder (full self-attention)</text>
+  <rect x="388" y="407" width="64" height="28" rx="5" fill="#eef4fc" stroke="#2f6fd0"/>
+  <text x="420" y="425" font-size="12" fill="#6b6b70" text-anchor="middle">[CLS]</text>
+  <rect x="486" y="398" width="104" height="46" rx="8" fill="#dbe7f8" stroke="#2f6fd0" stroke-width="1.6"/>
+  <text x="538" y="426" font-size="13" font-weight="700" fill="#1e54a8" text-anchor="middle">score</text>
+  <text x="606" y="422" font-size="10" fill="#6b6b70" text-anchor="start">q, d interact in every layer</text>
+  <line x1="106" y1="421" x2="130" y2="421" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="358" y1="421" x2="386" y2="421" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="452" y1="421" x2="484" y2="421" stroke="#2f6fd0" stroke-width="1.5" marker-end="url(#ah)"/>
+</svg>
