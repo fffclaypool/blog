@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 260" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="A tick and an input racing on shared mutable state">
+  <defs>
+    <marker id="ahw" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#c0612a"/>
+    </marker>
+  </defs>
+
+  <!-- producers -->
+  <rect x="36" y="44" width="160" height="52" rx="10" fill="#ffffff" stroke="#c0612a" stroke-width="1.6"/>
+  <text x="116" y="75" font-size="14" fill="#2b2b30" text-anchor="middle">Tick (timer)</text>
+
+  <rect x="36" y="164" width="160" height="52" rx="10" fill="#ffffff" stroke="#c0612a" stroke-width="1.6"/>
+  <text x="116" y="195" font-size="14" fill="#2b2b30" text-anchor="middle">MoveDown (input)</text>
+
+  <!-- shared mutable state -->
+  <rect x="420" y="92" width="240" height="76" rx="10" fill="#fbf0e8" stroke="#c0612a" stroke-width="1.8"/>
+  <text x="540" y="124" font-size="15" font-weight="700" fill="#2b2b30" text-anchor="middle">shared mutable state</text>
+  <text x="540" y="148" font-size="12" fill="#6b6b70" text-anchor="middle">(same falling piece)</text>
+
+  <!-- racing arrows -->
+  <line x1="200" y1="72" x2="414" y2="116" stroke="#c0612a" stroke-width="1.6" marker-end="url(#ahw)"/>
+  <line x1="200" y1="188" x2="414" y2="144" stroke="#c0612a" stroke-width="1.6" marker-end="url(#ahw)"/>
+  <text x="292" y="92" font-size="11" fill="#c0612a" text-anchor="middle">read + write</text>
+  <text x="292" y="184" font-size="11" fill="#c0612a" text-anchor="middle">read + write</text>
+  <text x="300" y="134" font-size="14" font-weight="700" fill="#c0612a" text-anchor="middle">race</text>
+
+  <text x="540" y="190" font-size="11" fill="#c0612a" text-anchor="middle">→ double-step / stale read / heisenbug</text>
+</svg>

@@ -17,6 +17,11 @@ A real Tetris loop has time (ticks), concurrent inputs (keystrokes), state trans
 
 **Monadris** treats those failure modes as architectural problems, not “be more careful” problems. The core idea is to **physically separate** a *pure* core (domain + rules) from an *impure* app layer (I/O + timing + rendering), and to model the game as a deterministic state machine driven by events.
 
+<figure>
+  <img src="{{ '/assets/img/architecture-core-shell.svg' | relative_url }}" alt="A pure core, (State, Input) to State, enclosed by an impure ZIO shell handling I/O, timing, rendering, and persistence">
+  <figcaption>A <em>pure</em> core sits inside an <em>impure</em> shell: events flow in, the next state flows out, and the boundary is enforced at compile time.</figcaption>
+</figure>
+
 ## What “safer” means here
 
 When I say “functional design makes Tetris safer,” I don’t mean “FP is morally superior.” I mean the architecture makes certain classes of bugs harder (or impossible) to introduce:
@@ -41,6 +46,11 @@ Depending on scheduling, you can get:
 - a collision check on a stale position,
 - a lock/clear occurring “too early,”
 - a bug that disappears under debugging (classic heisenbug).
+
+<figure>
+  <img src="{{ '/assets/img/race-condition.svg' | relative_url }}" alt="A timer Tick and a MoveDown input both read and write the same shared mutable state, causing a race">
+  <figcaption>The imperative failure mode: a tick and an input both read and write the same mutable state, racing to produce a double-step, a stale-position collision, or a heisenbug.</figcaption>
+</figure>
 
 Monadris doesn’t try to “time it right.” It **defines a single ordering**: events are queued, then processed one-by-one by the game loop.
 
@@ -100,6 +110,11 @@ Conceptually:
 1. input fiber pushes events into a queue
 2. timer fiber pushes tick events into the same queue
 3. one game loop consumes events and applies update(state, input) sequentially
+
+<figure>
+  <img src="{{ '/assets/img/event-loop.svg' | relative_url }}" alt="Input and timer fibers push events into one queue; a single game loop consumes them one at a time and applies update(state, input) to produce the next state">
+  <figcaption>Concurrency lives only in the producers. Events funnel through one queue into a single game-loop consumer, so there is exactly one serialized path to the next state.</figcaption>
+</figure>
 
 That last point is the “safety lever”: there is exactly one path that produces the next state.
 
