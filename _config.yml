@@ -6,6 +6,9 @@ author: fffclaypool
 url: "https://fffclaypool.github.io"
 baseurl: "/blog"
 
+# 同日内の並び順を時刻で制御するため、未来日付の記事も公開する
+future: true
+
 markdown: kramdown
 kramdown:
   input: GFM
