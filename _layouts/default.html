@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if page.title and page.title != "" %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+{% if page.description %}<meta name="description" content="{{ page.description }}">{% endif %}
+
+<!-- MathJax v3: kramdown は $$...$$ を \(...\) / \[...\] に変換するため、その区切りを拾う -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+<style>
+  :root {
+    --fg: #2b2b30;
+    --muted: #8a8a92;
+    --bg: #ffffff;
+    --accent: #2f6fd0;
+    --accent-deep: #1e54a8;
+    --pill-bg: #e8f0fb;
+    --pill-fg: #2f6fd0;
+    --callout-bg: #eef4fc;
+    --callout-border: #cfe0f6;
+    --rule: #e6e6ea;
+    --header-bg: #f6f7f9;
+    --code-bg: #f1ede3;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Hiragino Sans", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
+    color: var(--fg); background: var(--bg);
+    margin: 0; line-height: 1.85; font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .site-header {
+    border-bottom: 1px solid var(--rule);
+    padding: 16px 24px;
+  }
+  .site-title {
+    font-weight: 700; font-size: 1.1rem; color: var(--fg);
+    text-decoration: none; letter-spacing: 0.01em;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 96px; }
+  .site-footer {
+    border-top: 1px solid var(--rule); color: var(--muted);
+    font-size: 0.84rem; text-align: center; padding: 24px;
+  }
+
+  h1, h2, h3 { line-height: 1.4; }
+  .post-title { font-size: 2rem; font-weight: 700; margin: 0 0 6px; }
+  .post-desc { color: var(--muted); margin: 0 0 4px; font-size: 0.98rem; }
+  .post-meta { color: var(--muted); font-size: 0.85rem; margin: 0 0 28px; }
+
+  h2 {
+    font-size: 1.45rem; font-weight: 700; margin-top: 2.8em;
+    padding-left: 14px; border-left: 5px solid var(--accent);
+    scroll-margin-top: 20px;
+  }
+  h3 { font-size: 1.18rem; font-weight: 700; margin-top: 2em; color: var(--accent-deep); }
+
+  p { margin: 12px 0; }
+  a { color: var(--accent); }
+
+  .pill {
+    display: inline-block; background: var(--pill-bg); color: var(--pill-fg);
+    font-size: 0.72rem; font-weight: 600; padding: 3px 11px;
+    border-radius: 999px; vertical-align: middle; margin-left: 6px;
+    letter-spacing: 0.02em;
+  }
+  p.note { color: var(--muted); font-size: 0.88rem; margin-top: 10px; line-height: 1.7; }
+
+  blockquote {
+    background: var(--callout-bg); border: 1px solid var(--callout-border);
+    border-left: 4px solid var(--accent); border-radius: 8px;
+    margin: 22px 0; padding: 6px 22px; font-size: 0.95rem;
+  }
+  blockquote strong { color: var(--accent-deep); }
+  blockquote ul { margin: 8px 0; }
+
+  table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 0.93rem; }
+  th, td { border: 1px solid var(--rule); padding: 9px 13px; text-align: left; }
+  th { background: var(--header-bg); font-weight: 600; }
+
+  code {
+    background: var(--code-bg); padding: 1px 6px; border-radius: 3px;
+    font-size: 0.9em; font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  pre { background: #f6f7f9; padding: 14px 16px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+
+  mjx-container[display="true"] { margin: 18px 0 !important; overflow-x: auto; overflow-y: hidden; }
+
+  .post-list { list-style: none; padding: 0; }
+  .post-list li { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .post-list-date { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+</header>
+<main class="wrap">
+{{ content }}
+</main>
+<footer class="site-footer">© {{ 'now' | date: "%Y" }} {{ site.author }}</footer>
+</body>
+</html>

@@ -1,0 +1,21 @@
+title: "fffclaypool tech notes"
+description: "技術メモと数理的な解説"
+author: fffclaypool
+
+# 公開 URL: https://fffclaypool.github.io/blog/
+url: "https://fffclaypool.github.io"
+baseurl: "/blog"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+permalink: /:year/:month/:day/:title/
+
+# build から除外
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
