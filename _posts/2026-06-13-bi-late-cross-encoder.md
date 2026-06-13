@@ -2,7 +2,7 @@
 layout: post
 title: "Bi-Encoder / Late Interaction / Cross-Encoder — 違いを生む「相互作用の場所」の数理"
 description: "クエリと文書が“どこで”混ざるか。スコア関数の分離可能性という観点から、3方式の精度とレイテンシのトレードオフを数式で読み解く。"
-date: 2026-06-13
+date: 2026-06-13 12:00:00
 lang: ja
 permalink: /ja/bi-late-cross-encoder/
 ---
