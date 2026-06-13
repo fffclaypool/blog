@@ -3,14 +3,17 @@ layout: default
 title: ""
 ---
 
-# Posts / 記事
+# fffclaypool tech notes
+
+言語を選択 / Choose a language:
 
 <ul class="post-list">
-{% for post in site.posts %}
   <li>
-    <span class="post-list-date">{{ post.date | date: "%Y-%m-%d" }}</span>
-    <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-    {% if post.lang %}<span class="lang-badge">{{ post.lang | upcase }}</span>{% endif %}
+    <span class="lang-badge">JA</span>
+    <a href="{{ '/ja/' | relative_url }}">日本語の記事一覧</a>
   </li>
-{% endfor %}
+  <li>
+    <span class="lang-badge">EN</span>
+    <a href="{{ '/en/' | relative_url }}">Posts in English</a>
+  </li>
 </ul>

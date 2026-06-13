@@ -113,7 +113,8 @@ window.MathJax = {
 </head>
 <body>
 <header class="site-header">
-  <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+  {% if page.lang == 'en' %}{% assign home = '/en/' %}{% elsif page.lang == 'ja' %}{% assign home = '/ja/' %}{% else %}{% assign home = '/' %}{% endif %}
+  <a class="site-title" href="{{ home | relative_url }}">{{ site.title }}</a>
 </header>
 <main class="wrap">
 {{ content }}
