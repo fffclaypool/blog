@@ -175,17 +175,6 @@ $$
 A correct answer at rank 1 contributes 1, at rank 2 gives 0.5, at rank 3 gives 0.33…. Useful for question answering or known-item search, where a single correct answer suffices.
 {:.note}
 
-### ERR <span class="pill">Expected Reciprocal Rank</span>
-
-Based on a cascade model in which the user scans from the top and stops once sufficiently satisfied. Letting the probability of being satisfied by the document at position $$i$$ be $$R_i = \dfrac{2^{\mathrm{rel}_i} - 1}{2^{g_{\max}}}$$, ERR is given by:
-
-$$
-\mathrm{ERR} = \sum_{i=1}^{n} \frac{R_i}{i} \prod_{j=1}^{i-1} (1 - R_j)
-$$
-
-$$\prod_{j=1}^{i-1}(1 - R_j)$$ is "the probability that no one was satisfied above rank $$i$$." It can be seen as a generalization of MRR to graded relevance.
-{:.note}
-
 ## 7. Comparison and Summary
 
 | Metric | Rank-aware | Relevance | Normalized | Main use |
@@ -196,13 +185,12 @@ $$\prod_{j=1}^{i-1}(1 - R_j)$$ is "the probability that no one was satisfied abo
 | MAP | ✓ | Binary | [0,1] | Standard ranking evaluation |
 | nDCG@k | ✓ | Graded | [0,1] | Graded-relevance ranking |
 | MRR | ✓ | Binary | (0,1] | Speed to first correct answer |
-| ERR | ✓ | Graded | (0,1] | User-satisfaction model |
 
 > **A guide to choosing metrics:**
 >
 > - Coverage matters most → **Recall / MAP**
 > - Quality of the top few matters → **P@k / nDCG@k**
 > - A single correct answer suffices (QA, known-item) → **MRR**
-> - Web search with graded relevance → **nDCG / ERR**
+> - Web search with graded relevance → **nDCG**
 
 > **A note on assumptions:** These metrics assume offline evaluation with per-document relevance judgments. In practice, not all documents can be judged, so pooling is often used to evaluate only a subset — introducing the approximation of treating unjudged documents as non-relevant. Moreover, when aggregating across queries, it is advisable to report not just the mean but also statistical significance tests (e.g., a paired t-test or the Wilcoxon signed-rank test).
