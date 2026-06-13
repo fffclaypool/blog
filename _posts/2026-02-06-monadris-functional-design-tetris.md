@@ -4,7 +4,10 @@ title: "Monadris: Why Functional Design Makes Tetris Safer and Easier (Scala 3 +
 description: "Separating a pure core from an impure ZIO shell — a deterministic state machine, ADTs, a serialized event loop, and replay — makes a Tetris implementation safer and easier to evolve."
 date: 2026-02-06
 lang: en
+ref: monadris
 permalink: /en/monadris-functional-design/
+translation: /ja/monadris-functional-design/
+translation_label: "日本語"
 ---
 
 Tetris looks simple — until you implement it.
