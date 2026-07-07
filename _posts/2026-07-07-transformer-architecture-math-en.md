@@ -25,7 +25,7 @@ Each row is one token; each column is a feature dimension. Because this shape is
 - **Self-Attention**: mixes information *across* tokens — an operation along the sequence (row) direction.
 - **FFN (Feed-Forward Network)**: transforms features *within* each token — an operation along the feature (column) direction, applying the same MLP independently to every position.
 
-![Structure of a Transformer block: Attention mixes along the sequence direction and the FFN transforms along the feature direction, with residual connections and LayerNorm in between]({{ '/assets/img/transformer-block.svg' | relative_url }})
+![Structure of a Transformer block: Attention mixes along the sequence direction and the FFN transforms along the feature direction, with residual connections and LayerNorm in between]({{ '/assets/img/transformer-block-en.svg' | relative_url }})
 
 *The division of labor within a block. Information transfer along the sequence is monopolized by Attention, while the FFN is closed within each position. This contrast carries over directly to the complexity analysis below.*
 
@@ -65,7 +65,7 @@ $$
 
 Entry $$(i, j)$$ of $$A$$ is "how much token $$i$$ attends to token $$j$$"; each row is non-negative and sums to 1.
 
-![Attention as matrix multiplication: Q times K-transpose produces an n×n similarity matrix, which is normalized row-wise by softmax and used to mix V]({{ '/assets/img/attention-matmul.svg' | relative_url }})
+![Attention as matrix multiplication: Q times K-transpose produces an n×n similarity matrix, which is normalized row-wise by softmax and used to mix V]({{ '/assets/img/attention-matmul-en.svg' | relative_url }})
 
 *Attention as matrix arithmetic. The central $$n \times n$$ matrix holds the attention weights; row $$i$$ is token $$i$$'s probability distribution over "where to look." This is where the matrix that is quadratic in sequence length is born.*
 
@@ -153,7 +153,7 @@ $$
 
 Since $$\exp(-\infty) = 0$$, the weights on future positions are exactly zero after the softmax. The important detail is that the masked entries are excluded from the softmax *denominator* as well — this is not the same as multiplying by zero afterwards.
 
-![Comparison of bidirectional Attention (Encoder) and causally masked Attention (Decoder): the Encoder lets every token attend to every token, while the Decoder allows only the lower triangle]({{ '/assets/img/causal-mask.svg' | relative_url }})
+![Comparison of bidirectional Attention (Encoder) and causally masked Attention (Decoder): the Encoder lets every token attend to every token, while the Decoder allows only the lower triangle]({{ '/assets/img/causal-mask-en.svg' | relative_url }})
 
 *The difference in masks is the heart of the Encoder/Decoder distinction. BERT uses the left pattern and GPT the right pattern in every layer.*
 

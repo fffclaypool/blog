@@ -1,0 +1,28 @@
+<svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Bidirectional attention vs. causal mask">
+  <rect width="680" height="250" fill="#ffffff"/>
+  <text x="130" y="30" font-size="13" fill="#3D4E5C" text-anchor="middle">Encoder (bidirectional)</text>
+  <g fill="#1E6FD9" opacity="0.35">
+    <rect x="55" y="45" width="30" height="30"/><rect x="87" y="45" width="30" height="30"/><rect x="119" y="45" width="30" height="30"/><rect x="151" y="45" width="30" height="30"/><rect x="183" y="45" width="30" height="30"/>
+    <rect x="55" y="77" width="30" height="30"/><rect x="87" y="77" width="30" height="30"/><rect x="119" y="77" width="30" height="30"/><rect x="151" y="77" width="30" height="30"/><rect x="183" y="77" width="30" height="30"/>
+    <rect x="55" y="109" width="30" height="30"/><rect x="87" y="109" width="30" height="30"/><rect x="119" y="109" width="30" height="30"/><rect x="151" y="109" width="30" height="30"/><rect x="183" y="109" width="30" height="30"/>
+    <rect x="55" y="141" width="30" height="30"/><rect x="87" y="141" width="30" height="30"/><rect x="119" y="141" width="30" height="30"/><rect x="151" y="141" width="30" height="30"/><rect x="183" y="141" width="30" height="30"/>
+    <rect x="55" y="173" width="30" height="30"/><rect x="87" y="173" width="30" height="30"/><rect x="119" y="173" width="30" height="30"/><rect x="151" y="173" width="30" height="30"/><rect x="183" y="173" width="30" height="30"/>
+  </g>
+  <text x="134" y="228" font-size="11" fill="#6B7A86" text-anchor="middle">every token can attend to every token</text>
+  <text x="480" y="30" font-size="13" fill="#3D4E5C" text-anchor="middle">Decoder (causal mask)</text>
+  <g fill="#E0662C" opacity="0.4">
+    <rect x="405" y="45" width="30" height="30"/>
+    <rect x="405" y="77" width="30" height="30"/><rect x="437" y="77" width="30" height="30"/>
+    <rect x="405" y="109" width="30" height="30"/><rect x="437" y="109" width="30" height="30"/><rect x="469" y="109" width="30" height="30"/>
+    <rect x="405" y="141" width="30" height="30"/><rect x="437" y="141" width="30" height="30"/><rect x="469" y="141" width="30" height="30"/><rect x="501" y="141" width="30" height="30"/>
+    <rect x="405" y="173" width="30" height="30"/><rect x="437" y="173" width="30" height="30"/><rect x="469" y="173" width="30" height="30"/><rect x="501" y="173" width="30" height="30"/><rect x="533" y="173" width="30" height="30"/>
+  </g>
+  <g fill="#EEF2F5" stroke="#D4DCE2">
+    <rect x="437" y="45" width="30" height="30"/><rect x="469" y="45" width="30" height="30"/><rect x="501" y="45" width="30" height="30"/><rect x="533" y="45" width="30" height="30"/>
+    <rect x="469" y="77" width="30" height="30"/><rect x="501" y="77" width="30" height="30"/><rect x="533" y="77" width="30" height="30"/>
+    <rect x="501" y="109" width="30" height="30"/><rect x="533" y="109" width="30" height="30"/>
+    <rect x="533" y="141" width="30" height="30"/>
+  </g>
+  <text x="516" y="66" font-size="12" fill="#9AAAB6" text-anchor="middle">−∞</text>
+  <text x="484" y="228" font-size="11" fill="#6B7A86" text-anchor="middle">position i attends only to j ≤ i (lower triangular)</text>
+</svg>

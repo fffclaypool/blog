@@ -22,7 +22,7 @@ $$
 
 $$T$$ is a temperature parameter, normally $$T = 1$$ during training. Raising $$T$$ flattens the distribution (less confident); lowering it sharpens the distribution (more confident).
 
-![The logit-to-softmax transformation: the ranking and gaps between scores are preserved, but frequency-level correctness is not guaranteed]({{ '/assets/img/logits-softmax.svg' | relative_url }})
+![The logit-to-softmax transformation: the ranking and gaps between scores are preserved, but frequency-level correctness is not guaranteed]({{ '/assets/img/logits-softmax-en.svg' | relative_url }})
 
 *Softmax is merely a projection of relative scores onto the probability simplex. Adding a constant to all of $$z$$ leaves $$p$$ unchanged (shift invariance): $$p$$ is determined solely by the differences between logits.*
 
@@ -40,7 +40,7 @@ $$
 
 The standard visualization is the **reliability diagram**: bin the confidence values, then plot each bin's mean confidence against its actual accuracy. Landing on the diagonal is ideal; dipping below it means the model is **overconfident**. The weighted average of the per-bin gaps is the **ECE (Expected Calibration Error)**, the most common calibration metric.
 
-![Reliability diagram: an overconfident model's curve sinks below the diagonal]({{ '/assets/img/reliability-diagram.svg' | relative_url }})
+![Reliability diagram: an overconfident model's curve sinks below the diagonal]({{ '/assets/img/reliability-diagram-en.svg' | relative_url }})
 
 *A reliability diagram. The typical overconfidence pattern: the set of predictions made with "confidence 0.95" turns out to be only 0.82 accurate.*
 
