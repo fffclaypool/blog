@@ -135,8 +135,6 @@ Uses you should not trust:
 
 To compress it into one sentence: **a softmax output is a "relative score shaped like a probability," and the right to treat it as a probability is earned only by verifying calibration.** With Encoders that verification and correction is straightforward; with Decoders, extracting the probability at all is riddled with pitfalls. In either case, drawing a single reliability diagram on your own data is the shortest ritual that makes the number worthy of trust.
 
-> The structures assumed here — Attention, the classification head, the LM head — are derived from the equations up in the companion article "[The Mathematics of the Transformer Architecture — Reading Attention, FFN, and Masks Through Equations]({{ '/en/transformer-architecture-math/' | relative_url }})".
-
 ## References
 
 - Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017). On Calibration of Modern Neural Networks. *ICML 2017*.

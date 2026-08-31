@@ -135,8 +135,6 @@ GPT 系の Decoder モデルで分類を行う場合、事情は根本的に変�
 
 最後にひとことで要約するなら——**ソフトマックスの出力は「確率のかたちをした相対スコア」であり、確率として扱う資格は較正の検証によってはじめて与えられる。**Encoder ではその検証と補正が素直に行え、Decoder では確率の取り出し自体に複数の落とし穴がある。どちらの場合も、自分のデータで信頼度ダイアグラムを一枚描くことが、その数値を信用するための最短の儀式である。
 
-> ここで前提にした Attention・分類ヘッド・LM head などの構造そのものは、別記事「[Transformer アーキテクチャの数理 — Attention・FFN・マスクを式で読む]({{ '/ja/transformer-architecture-math/' | relative_url }})」で数式から解説している。
-
 ## 参考文献
 
 - Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017). On Calibration of Modern Neural Networks. *ICML 2017*.
