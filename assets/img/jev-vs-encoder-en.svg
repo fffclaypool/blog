@@ -1,0 +1,59 @@
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif" role="img" aria-label="Comparison of inputs and outputs: Transformer Encoder classifier vs Jev">
+  <rect width="720" height="300" fill="#ffffff"/>
+
+  <!-- left: Encoder classifier -->
+  <text x="20" y="26" font-size="13" fill="#15232E" font-weight="bold">Transformer Encoder + classification head</text>
+  <rect x="20" y="44" width="150" height="34" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="95" y="65" font-size="12" fill="#15232E" text-anchor="middle">[CLS] input text</text>
+  <line x1="170" y1="61" x2="200" y2="61" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="200,61 192,57 192,65" fill="#6B7A86"/>
+  <rect x="205" y="44" width="100" height="34" rx="4" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="255" y="65" font-size="12" fill="#1E6FD9" text-anchor="middle">Encoder</text>
+  <line x1="255" y1="78" x2="255" y2="104" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="255,104 251,96 259,96" fill="#6B7A86"/>
+  <rect x="180" y="108" width="150" height="34" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="255" y="129" font-size="12" fill="#E0662C" text-anchor="middle">linear head (C fixed)</text>
+  <line x1="255" y1="142" x2="255" y2="168" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="255,168 251,160 259,160" fill="#6B7A86"/>
+  <rect x="180" y="172" width="150" height="34" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="255" y="193" font-size="12" fill="#15232E" text-anchor="middle">softmax → p ∈ R^C</text>
+  <text x="20" y="236" font-size="11" fill="#3D4E5C">• Label set fixed at training time (retrain to change)</text>
+  <text x="20" y="254" font-size="11" fill="#3D4E5C">• One sequence = one task</text>
+  <text x="20" y="272" font-size="11" fill="#3D4E5C">• Probabilities need post-hoc calibration (overconfident)</text>
+
+  <line x1="360" y1="20" x2="360" y2="285" stroke="#D4DCE2" stroke-dasharray="4 4"/>
+
+  <!-- right: Jev -->
+  <text x="380" y="26" font-size="13" fill="#15232E" font-weight="bold">Jev (System One model)</text>
+  <rect x="380" y="44" width="90" height="34" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="425" y="65" font-size="12" fill="#15232E" text-anchor="middle">state</text>
+  <rect x="380" y="86" width="90" height="26" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="425" y="103" font-size="11" fill="#E0662C" text-anchor="middle">Q1: choice</text>
+  <rect x="380" y="116" width="90" height="26" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="425" y="133" font-size="11" fill="#E0662C" text-anchor="middle">Q2: score</text>
+  <rect x="380" y="146" width="90" height="26" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="425" y="163" font-size="11" fill="#E0662C" text-anchor="middle">Q3: noul</text>
+  <text x="425" y="192" font-size="11" fill="#6B7A86" text-anchor="middle">criteria given in natural</text>
+  <text x="425" y="206" font-size="11" fill="#6B7A86" text-anchor="middle">language, per request</text>
+
+  <line x1="470" y1="108" x2="505" y2="108" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="505,108 497,104 497,112" fill="#6B7A86"/>
+  <rect x="510" y="70" width="80" height="76" rx="4" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="550" y="102" font-size="12" fill="#1E6FD9" text-anchor="middle">Jev</text>
+  <text x="550" y="120" font-size="9" fill="#1E6FD9" text-anchor="middle">(RLCD-trained)</text>
+  <line x1="590" y1="108" x2="625" y2="108" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="625,108 617,104 617,112" fill="#6B7A86"/>
+
+  <rect x="630" y="44" width="80" height="34" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="670" y="59" font-size="10" fill="#15232E" text-anchor="middle">choice + probs</text>
+  <text x="670" y="72" font-size="10" fill="#15232E" text-anchor="middle">+ confidence</text>
+  <rect x="630" y="90" width="80" height="34" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="670" y="105" font-size="10" fill="#15232E" text-anchor="middle">score + probs</text>
+  <text x="670" y="118" font-size="10" fill="#15232E" text-anchor="middle">+ confidence</text>
+  <rect x="630" y="136" width="80" height="34" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="670" y="157" font-size="10" fill="#15232E" text-anchor="middle">noul ∈ [0, 1]</text>
+
+  <text x="380" y="236" font-size="11" fill="#3D4E5C">• Label set defined per request in natural language (shared weights)</text>
+  <text x="380" y="254" font-size="11" fill="#3D4E5C">• N questions per state, evaluated in parallel and independently</text>
+  <text x="380" y="272" font-size="11" fill="#3D4E5C">• Calibrated probabilities are a training objective (RLCD)</text>
+</svg>
