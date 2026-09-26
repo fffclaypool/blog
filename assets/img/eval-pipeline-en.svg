@@ -1,0 +1,53 @@
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Chatbot pipeline with per-component evaluation metrics">
+  <rect width="720" height="270" fill="#ffffff"/>
+
+  <rect x="20" y="40" width="60" height="44" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="50" y="66" font-size="12" fill="#15232E" text-anchor="middle">query</text>
+  <line x1="80" y1="62" x2="96" y2="62" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="100,62 92,58 92,66" fill="#6B7A86"/>
+
+  <rect x="100" y="40" width="140" height="44" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="170" y="66" font-size="12" fill="#E0662C" text-anchor="middle">scope check</text>
+  <line x1="240" y1="62" x2="256" y2="62" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="260,62 252,58 252,66" fill="#6B7A86"/>
+
+  <rect x="260" y="40" width="140" height="44" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="330" y="66" font-size="12" fill="#E0662C" text-anchor="middle">retrieval</text>
+  <line x1="400" y1="62" x2="416" y2="62" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="420,62 412,58 412,66" fill="#6B7A86"/>
+
+  <rect x="420" y="40" width="150" height="44" rx="4" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="495" y="66" font-size="12" fill="#1E6FD9" text-anchor="middle">generation</text>
+  <line x1="570" y1="62" x2="586" y2="62" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="590,62 582,58 582,66" fill="#6B7A86"/>
+
+  <rect x="590" y="40" width="70" height="44" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="625" y="66" font-size="12" fill="#15232E" text-anchor="middle">answer</text>
+
+  <line x1="170" y1="84" x2="170" y2="100" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <rect x="100" y="102" width="140" height="80" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="170" y="122" font-size="10" fill="#3D4E5C" text-anchor="middle">over-refusal rate</text>
+  <text x="170" y="138" font-size="10" fill="#3D4E5C" text-anchor="middle">leak rate (out of scope)</text>
+  <text x="170" y="154" font-size="10" fill="#3D4E5C" text-anchor="middle">confusion matrix</text>
+  <text x="170" y="172" font-size="9" fill="#6B7A86" text-anchor="middle">judge: deterministic</text>
+
+  <line x1="330" y1="84" x2="330" y2="100" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <rect x="260" y="102" width="140" height="80" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="330" y="122" font-size="10" fill="#3D4E5C" text-anchor="middle">Recall@k</text>
+  <text x="330" y="138" font-size="10" fill="#3D4E5C" text-anchor="middle">MRR, nDCG</text>
+  <text x="330" y="154" font-size="10" fill="#3D4E5C" text-anchor="middle">(query, gold passage)</text>
+  <text x="330" y="172" font-size="9" fill="#6B7A86" text-anchor="middle">judge: deterministic</text>
+
+  <line x1="495" y1="84" x2="495" y2="100" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <rect x="420" y="102" width="150" height="80" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="495" y="120" font-size="10" fill="#3D4E5C" text-anchor="middle">correctness (vs. reference)</text>
+  <text x="495" y="135" font-size="10" fill="#3D4E5C" text-anchor="middle">faithfulness (claims supported)</text>
+  <text x="495" y="150" font-size="10" fill="#3D4E5C" text-anchor="middle">helpfulness (rubric), format</text>
+  <text x="495" y="172" font-size="9" fill="#6B7A86" text-anchor="middle">judge: rules / LLM (human-validated)</text>
+
+  <line x1="100" y1="204" x2="660" y2="204" stroke="#6B7A86" stroke-width="1.2"/>
+  <line x1="100" y1="198" x2="100" y2="204" stroke="#6B7A86" stroke-width="1.2"/>
+  <line x1="660" y1="198" x2="660" y2="204" stroke="#6B7A86" stroke-width="1.2"/>
+  <text x="380" y="224" font-size="11" fill="#3D4E5C" text-anchor="middle">End to end: task success rate (offline)</text>
+  <text x="380" y="242" font-size="11" fill="#3D4E5C" text-anchor="middle">Production: escalation rate, rephrase rate, A/B tests (online)</text>
+</svg>

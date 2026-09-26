@@ -1,0 +1,48 @@
+<svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Claim-level faithfulness evaluation">
+  <rect width="720" height="220" fill="#ffffff"/>
+
+  <text x="95" y="30" font-size="12" fill="#15232E" font-weight="bold" text-anchor="middle">answer</text>
+  <rect x="20" y="40" width="150" height="110" rx="4" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="95" y="66" font-size="11" fill="#15232E" text-anchor="middle">Returns within 14 days.</text>
+  <text x="95" y="86" font-size="11" fill="#15232E" text-anchor="middle">We pay return shipping.</text>
+  <text x="95" y="106" font-size="11" fill="#15232E" text-anchor="middle">Item must be unopened.</text>
+  <text x="95" y="126" font-size="11" fill="#15232E" text-anchor="middle">Exchanges are possible.</text>
+
+  <line x1="170" y1="95" x2="206" y2="95" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="210,95 202,91 202,99" fill="#6B7A86"/>
+  <text x="190" y="84" font-size="9" fill="#6B7A86" text-anchor="middle">split</text>
+
+  <text x="300" y="30" font-size="12" fill="#15232E" font-weight="bold" text-anchor="middle">claims</text>
+  <rect x="215" y="40" width="170" height="22" rx="3" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="300" y="55" font-size="10" fill="#15232E" text-anchor="middle">return window is 14 days</text>
+  <rect x="215" y="70" width="170" height="22" rx="3" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="300" y="85" font-size="10" fill="#15232E" text-anchor="middle">return shipping is paid by us</text>
+  <rect x="215" y="100" width="170" height="22" rx="3" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="300" y="115" font-size="10" fill="#15232E" text-anchor="middle">item must be unopened</text>
+  <rect x="215" y="130" width="170" height="22" rx="3" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="300" y="145" font-size="10" fill="#15232E" text-anchor="middle">exchanges are possible</text>
+
+  <text x="480" y="30" font-size="12" fill="#15232E" font-weight="bold" text-anchor="middle">check against context</text>
+  <line x1="385" y1="51" x2="411" y2="51" stroke="#6B7A86" stroke-width="1"/>
+  <line x1="385" y1="81" x2="411" y2="81" stroke="#6B7A86" stroke-width="1"/>
+  <line x1="385" y1="111" x2="411" y2="111" stroke="#6B7A86" stroke-width="1"/>
+  <line x1="385" y1="141" x2="411" y2="141" stroke="#6B7A86" stroke-width="1"/>
+  <rect x="415" y="40" width="130" height="22" rx="3" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="480" y="55" font-size="10" fill="#1E6FD9" text-anchor="middle">✓ supported</text>
+  <rect x="415" y="70" width="130" height="22" rx="3" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="480" y="85" font-size="10" fill="#1E6FD9" text-anchor="middle">✓ supported</text>
+  <rect x="415" y="100" width="130" height="22" rx="3" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="480" y="115" font-size="10" fill="#1E6FD9" text-anchor="middle">✓ supported</text>
+  <rect x="415" y="130" width="130" height="22" rx="3" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="480" y="145" font-size="10" fill="#E0662C" text-anchor="middle">✗ not in context</text>
+
+  <rect x="415" y="170" width="130" height="30" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="480" y="189" font-size="10" fill="#3D4E5C" text-anchor="middle">retrieved passages</text>
+  <line x1="480" y1="170" x2="480" y2="158" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <polygon points="480,154 476,162 484,162" fill="#6B7A86"/>
+
+  <line x1="545" y1="95" x2="581" y2="95" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="585,95 577,91 577,99" fill="#6B7A86"/>
+  <text x="650" y="88" font-size="12" fill="#15232E" text-anchor="middle">faithfulness</text>
+  <text x="650" y="110" font-size="14" fill="#15232E" text-anchor="middle">3 / 4 = 0.75</text>
+</svg>
