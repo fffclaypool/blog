@@ -1,0 +1,62 @@
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif" role="img" aria-label="ドメイン外の質問を止める 4 つの層">
+  <rect width="760" height="250" fill="#ffffff"/>
+
+  <rect x="20" y="60" width="60" height="44" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="50" y="86" font-size="12" fill="#15232E" text-anchor="middle">質問</text>
+  <line x1="80" y1="82" x2="96" y2="82" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="100,82 92,78 92,86" fill="#6B7A86"/>
+
+  <rect x="100" y="52" width="120" height="60" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="160" y="76" font-size="12" fill="#E0662C" text-anchor="middle">入力分類器</text>
+  <text x="160" y="94" font-size="10" fill="#E0662C" text-anchor="middle">範囲内 / 範囲外 / 有害</text>
+  <line x1="220" y1="82" x2="236" y2="82" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="240,82 232,78 232,86" fill="#6B7A86"/>
+
+  <rect x="240" y="52" width="120" height="60" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="300" y="76" font-size="12" fill="#E0662C" text-anchor="middle">検索 ＋ スコア閾値</text>
+  <text x="300" y="94" font-size="10" fill="#E0662C" text-anchor="middle">FAQ 索引に該当があるか</text>
+  <line x1="360" y1="82" x2="376" y2="82" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="380,82 372,78 372,86" fill="#6B7A86"/>
+
+  <rect x="380" y="52" width="130" height="60" rx="4" fill="#E3EDFB" stroke="#1E6FD9"/>
+  <text x="445" y="76" font-size="12" fill="#1E6FD9" text-anchor="middle">LLM ＋ LoRA</text>
+  <text x="445" y="94" font-size="10" fill="#1E6FD9" text-anchor="middle">文脈だけから答える</text>
+  <line x1="510" y1="82" x2="526" y2="82" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="530,82 522,78 522,86" fill="#6B7A86"/>
+
+  <rect x="530" y="52" width="120" height="60" rx="4" fill="#FCEFE7" stroke="#E0662C"/>
+  <text x="590" y="76" font-size="12" fill="#E0662C" text-anchor="middle">出力検証</text>
+  <text x="590" y="94" font-size="10" fill="#E0662C" text-anchor="middle">回答に根拠があるか</text>
+  <line x1="650" y1="82" x2="666" y2="82" stroke="#6B7A86" stroke-width="1.5"/>
+  <polygon points="670,82 662,78 662,86" fill="#6B7A86"/>
+
+  <rect x="670" y="60" width="70" height="44" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="705" y="86" font-size="12" fill="#15232E" text-anchor="middle">回答</text>
+
+  <!-- 各層で止まる経路 -->
+  <line x1="160" y1="112" x2="160" y2="150" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <polygon points="160,154 156,146 164,146" fill="#6B7A86"/>
+  <rect x="105" y="156" width="110" height="40" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="160" y="172" font-size="10" fill="#3D4E5C" text-anchor="middle">範囲外</text>
+  <text x="160" y="187" font-size="10" fill="#3D4E5C" text-anchor="middle">→ 定型の断り</text>
+
+  <line x1="300" y1="112" x2="300" y2="150" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <polygon points="300,154 296,146 304,146" fill="#6B7A86"/>
+  <rect x="245" y="156" width="110" height="40" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="300" y="172" font-size="10" fill="#3D4E5C" text-anchor="middle">該当 FAQ なし</text>
+  <text x="300" y="187" font-size="10" fill="#3D4E5C" text-anchor="middle">→ 定型の断り</text>
+
+  <line x1="445" y1="112" x2="445" y2="150" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <polygon points="445,154 441,146 449,146" fill="#6B7A86"/>
+  <rect x="385" y="156" width="120" height="40" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="445" y="172" font-size="10" fill="#3D4E5C" text-anchor="middle">文脈に答えなし</text>
+  <text x="445" y="187" font-size="10" fill="#3D4E5C" text-anchor="middle">→「該当情報なし」</text>
+
+  <line x1="590" y1="112" x2="590" y2="150" stroke="#6B7A86" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <polygon points="590,154 586,146 594,146" fill="#6B7A86"/>
+  <rect x="535" y="156" width="110" height="40" rx="4" fill="#EEF2F5" stroke="#D4DCE2"/>
+  <text x="590" y="172" font-size="10" fill="#3D4E5C" text-anchor="middle">根拠なし</text>
+  <text x="590" y="187" font-size="10" fill="#3D4E5C" text-anchor="middle">→ 定型文に差し替え</text>
+
+  <text x="380" y="232" font-size="11" fill="#3D4E5C" text-anchor="middle">生成モデルの外側の 2 層で範囲外を止め、内側の 2 層で残りを拾う</text>
+</svg>
