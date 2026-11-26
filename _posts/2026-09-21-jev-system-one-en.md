@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Jev (TypeSafe) — How a Language Model That Doesn't Generate Text Differs from a Transformer Encoder Classifier"
-description: "TypeSafe's System One model 'Jev' generates no text; it returns typed decisions and calibrated probabilities. We lay out its inputs, outputs and training approach, then compare it with BERT-style Encoder classifiers along three axes: label space, input structure, and where the probabilities come from."
+title: "How Jev (TypeSafe), a Language Model That Doesn't Generate Text, Differs from a Transformer Encoder Classifier"
+description: "Jev, TypeSafe's System One model, generates no text and returns typed decisions with calibrated probabilities. This article describes its inputs, outputs and training approach, then compares it with BERT-style Encoder classifiers on three points: label space, input structure, and where the probabilities come from."
 date: 2026-09-21 12:00:00
 lang: en
 ref: jev-system-one
@@ -10,21 +10,21 @@ translation: /ja/jev-system-one/
 translation_label: "日本語"
 ---
 
-When you ask an LLM "Is this ticket a refund request?", structured output lets you have it report which of `yes` / `no` applies, together with a "confidence" value. But that confidence is self-reported, so it tends to be overconfident and hard to trust; and if you read token logprobs instead, a generative model's probabilities are distorted by competition with the whole vocabulary and by surface-form variation. **Jev**, released by TypeSafe, is built from the start to return uncertainty as a probability distribution. It generates no text. **It takes a state and typed questions, and returns a probability distribution over the options plus a confidence value** — nothing else.
+When you ask an LLM "Is this ticket a refund request?", structured output lets it report which of `yes` / `no` applies, together with a "confidence" value. That confidence is self-reported, so it tends to be overconfident and is hard to rely on. Reading token logprobs instead does not solve the problem, because a generative model's probabilities are distorted by competition with the whole vocabulary and by surface-form variation. Jev, released by TypeSafe, is built to return uncertainty as a probability distribution and generates no text. It takes a state and typed questions, and returns a probability distribution over the options plus a confidence value.
 
-This article works from the official documentation ([docs.typesafe.ai](https://docs.typesafe.ai/introduction)) to lay out Jev's inputs, outputs and training approach, then asks how it differs from another model family that also "doesn't generate": **BERT-style Transformer Encoders with a classification head**. Note that Jev's internal architecture (depth, Encoder vs. Decoder, and so on) is not public. The comparison below rests on **the published interface and training objective**.
+This article uses the official documentation ([docs.typesafe.ai](https://docs.typesafe.ai/introduction)) to describe Jev's inputs, outputs and training approach, and then compares it with another kind of model that does not generate text: a BERT-style Transformer Encoder with a classification head. Jev's internal architecture (depth, Encoder or Decoder, and so on) is not public, so the comparison is based on the published interface and training objective.
 
-## What Jev is — a System One model
+## What Jev is
 
-TypeSafe calls Jev "the first **System One model**". The name comes from Kahneman's *Thinking, Fast and Slow*: a model for fast, intuitive judgments (System 1). In the documentation's words, its territory is **"the kind of judgment a highly knowledgeable person could make in a few seconds given the right context."**
+TypeSafe calls Jev "the first System One model". The name comes from Kahneman's *Thinking, Fast and Slow* and refers to a model for fast, intuitive judgments (System 1). The documentation describes its scope as "the kind of judgment a highly knowledgeable person could make in a few seconds given the right context."
 
-There is a single endpoint (`POST /v1/systemone`), and a request has three parts:
+The API has a single endpoint (`POST /v1/systemone`), and a request has three parts.
 
 - **`state`**: the content to evaluate. A string, a JSON object, or an array. Text only (no images or audio yet)
 - **`questions`**: a set of questions about the state. Each has a `type`, `instructions`, and `criteria`
 - **`model`**: e.g. `jev-latest`
 
-There are only three question types, which TypeSafe calls **AI primitives**.
+There are only three question types, which TypeSafe calls AI primitives.
 
 | Question type | Asks | Returns |
 | --- | --- | --- |
@@ -32,11 +32,11 @@ There are only three question types, which TypeSafe calls **AI primitives**.
 | **Score** | Where on an ordered scale? | `score`, `legend`, `probabilities`, `confidence` |
 | **Noul** | Is this statement true? | `noul` (a probability in 0–1) |
 
-A single request can mix any number of questions, and **every question is evaluated against the same state in parallel and in isolation**. Adding questions barely changes the response time, and one question's answer never becomes hidden context for another.
+A single request can contain several questions, and every question is evaluated against the same state in parallel and independently. Adding questions barely changes the response time, and one question's answer does not become context for another.
 
-## What comes back — a distribution, and a summary of it
+## What comes back: a distribution and a summary of it
 
-The quickest way in is a concrete response. Here is a Score question rating bug severity on three levels (from the docs).
+Below is an example response from the docs for a Score question that rates bug severity on three levels.
 
 ```json
 {
@@ -57,36 +57,38 @@ The quickest way in is a concrete response. Here is a Score question rating bug 
 }
 ```
 
-Let's pin down what these fields mean. Write the distribution over $$C$$ options (or levels) as $$p = (p_0, \ldots, p_{C-1})$$ with $$\sum_i p_i = 1$$.
+The fields can be defined precisely. Write the distribution over $$C$$ options (or levels) as $$p = (p_0, \ldots, p_{C-1})$$ with $$\sum_i p_i = 1$$.
 
-- **Choice**'s `choice` is $$\arg\max_i p_i$$, i.e. the option with the highest probability.
-- **Score**'s `score` is the **expected value** of the level index, $$\sum_{i=0}^{C-1} i \cdot p_i$$. In the example, $$0 \times 0.0 + 1 \times 0.57 + 2 \times 0.43 = 1.43$$: a position between levels 1 and 2, leaning toward 1.
-- **`confidence`** collapses the peakedness of $$p$$ into a single number in $$[0, 1]$$. All probability on one option gives 1.0; the closer to uniform, the closer to 0. The interactive demo in the docs approximates it as $$\frac{C \cdot \max_i p_i - 1}{C - 1}$$; the exact official definition is not published.
-- **Noul** returns the probability that the statement is true, as a single number. 0.5 means "yes and no are equally likely", not "medium".
+- **Choice**'s `choice` is $$\arg\max_i p_i$$, the option with the highest probability.
+- **Score**'s `score` is the expected value of the level index, $$\sum_{i=0}^{C-1} i \cdot p_i$$. In the example, $$0 \times 0.0 + 1 \times 0.57 + 2 \times 0.43 = 1.43$$, a position between levels 1 and 2 that leans toward 1.
+- **`confidence`** summarizes how peaked $$p$$ is as a single number in $$[0, 1]$$. It is 1.0 when all probability is on one option and approaches 0 as the distribution approaches uniform. The interactive demo in the docs approximates it as $$\frac{C \cdot \max_i p_i - 1}{C - 1}$$, and the exact definition is not published.
+- **Noul** returns a single number, the probability that the statement is true. A value of 0.5 means that yes and no are equally likely, not that the answer is "medium".
 
-The important point is that **`confidence` is a secondary value derived from `probabilities`**. If all you need is a threshold to branch on, use `confidence`; but since the full distribution is returned, the docs explicitly say you are free to compute your own statistic (entropy, say) if it fits your use case better.
+`confidence` is a secondary value derived from `probabilities`. It is enough when all you need is a threshold to branch on. Because the full distribution is returned, the docs state that you can also compute a different statistic, such as entropy, if it suits your use case better.
 
-## Training approach — RLCD, not RLHF
+## Training approach: RLCD, not RLHF
 
-The thing TypeSafe emphasizes most is the training objective. As post-training approaches for a pretrained language model, they line up three:
+What TypeSafe emphasizes most is the training objective. It lists three post-training approaches for a pretrained language model.
 
 | Method | Objective | Produced |
 | --- | --- | --- |
 | RLHF (Reinforcement Learning from Human Feedback) | Responses people prefer | Chatbots |
 | RLVR (Reinforcement Learning with Verifiable Rewards) | Verifiable rewards (math, etc.) | Reasoning models |
-| **RLCD** (Reinforcement Learning for Calibrated Decisions) | **Decisions with calibrated probabilities** | System One models (Jev) |
+| RLCD (Reinforcement Learning for Calibrated Decisions) | Decisions with calibrated probabilities | System One models (Jev) |
 
-A quick recap of the first two. **RLHF** has humans rank multiple model responses, learns those preferences as a reward model, and uses reinforcement learning to push the model toward "responses people prefer". It is the method behind InstructGPT and ChatGPT, and according to the docs, TypeSafe co-founder Diogo Almeida is one of its co-inventors. But because the objective is "what people prefer", confident-sounding assertions and sycophancy get rewarded too, and the output distribution narrows toward a particular style — **mode dropping**. **RLVR** trains on **rewards that can be checked mechanically**, like a math answer key or a passing test suite. It produced the reasoning models typified by the o1 series and DeepSeek-R1. Accuracy goes up, but generating a long chain of thought makes them slower and more expensive.
+RLHF has humans rank several model responses, learns those preferences as a reward model, and uses reinforcement learning to move the model toward responses people prefer. It is the method behind InstructGPT and ChatGPT, and according to the docs, TypeSafe co-founder Diogo Almeida is one of its co-inventors. Because the objective is what people prefer, confident-sounding assertions and sycophancy are also rewarded, and the output distribution narrows toward a particular style, which is known as mode dropping.
 
-RLCD has a different goal from both. Neither human preference nor the correctness of generated answers: the training objective is **returning calibrated probabilities** itself (the concrete reward design is not published). The output contract comes down to three points: ① no text generation, ② return decisions and probabilities, ③ **higher probability corresponds to a higher chance the answer is actually correct**.
+RLVR trains on rewards that can be checked mechanically, such as a math answer key or a passing test suite. It produced reasoning models such as the o1 series and DeepSeek-R1. Accuracy improves, but generating a long chain of thought makes these models slower and more expensive.
 
-Point three is "calibration". Among all predictions assigned probability 0.8, about 80% are actually correct. As covered in [an earlier article](/blog/en/classification-confidence/), ordinary neural classifiers are systematically overconfident, and RLHF-tuned LLMs are even worse calibrated. TypeSafe's claim is that it **made calibration the training objective itself rather than a post-hoc correction**.
+RLCD has a different goal from both. It optimizes for returning calibrated probabilities, where RLHF optimizes for human preference and RLVR for the correctness of generated answers (the concrete reward design is not published). The output contract has three points: the model generates no text, it returns decisions and probabilities, and a higher probability corresponds to a higher chance that the answer is actually correct.
 
-That said, as the docs themselves warn, calibration is **a statistical property of groups of predictions** and does not guarantee any individual answer is correct. "confidence 1.0" means "the distribution is concentrated on one point", not "this is definitely right".
+The third point is calibration: among all predictions assigned a probability of 0.8, about 80% are actually correct. As covered in [an earlier article](/blog/en/classification-confidence/), ordinary neural classifiers are systematically overconfident, and RLHF-tuned LLMs are calibrated even worse. TypeSafe's claim is that it made calibration the training objective, where other approaches apply it as a post-hoc correction.
+
+As the docs themselves warn, calibration is a statistical property of groups of predictions and does not guarantee that any individual answer is correct. A confidence of 1.0 means that the distribution is concentrated on one option, not that the answer is certainly right.
 
 ## Comparison with a Transformer Encoder classifier
 
-Now to the main question. An Encoder like BERT, RoBERTa or DeBERTa with a classification head on top looks a lot like Jev: it doesn't generate, and it returns a probability distribution over a closed label set. What is the same, and what is different?
+An Encoder such as BERT, RoBERTa or DeBERTa with a classification head resembles Jev closely: it does not generate text, and it returns a probability distribution over a closed label set. The sections below cover what the two share and where they differ.
 
 <figure>
   <img src="{{ '/assets/img/jev-vs-encoder-en.svg' | relative_url }}" alt="Comparison of inputs and outputs for a Transformer Encoder classifier and Jev. The Encoder has a fixed-size linear head and handles one task per sequence; Jev evaluates several natural-language questions against one state in parallel and returns a distribution and confidence for each">
@@ -96,34 +98,34 @@ Now to the main question. An Encoder like BERT, RoBERTa or DeBERTa with a classi
 ### What they share
 
 - Neither generates free text. The output is a probability distribution over a predetermined set of candidates
-- So the problems that plague Decoder LLMs — competition with the whole vocabulary, probability split across surface forms, length bias for multi-token labels — do not exist, at least at the interface level
-- The argmax of the distribution is the decision, and the probabilities plug straight into thresholds and ranking
+- As a result, the problems of Decoder LLMs (competition with the whole vocabulary, probability split across surface forms, length bias for multi-token labels) do not arise, at least at the interface level
+- The argmax of the distribution is the decision, and the probabilities can be used directly for thresholds and ranking
 
-### Difference ①: where the label space is defined
+### Difference 1: where the label space is defined
 
-In an Encoder classifier, the label set is **fixed at training time as the head's output dimension $$C$$**. Adding a label means rebuilding the head and retraining. The meaning of each label is learned only implicitly from data; the model does not know, in words, what "class 2" means.
+In an Encoder classifier, the label set is fixed at training time as the head's output dimension $$C$$. Adding a label means rebuilding the head and retraining. The meaning of each label is learned only implicitly from data, and the model does not know in words what "class 2" means.
 
-In Jev, the label set is **passed with each request as natural-language `criteria`**: for Choice, a map like `{"returns": "Exchanges, wrong or damaged items", ...}`; for Score, an ordered list of level descriptions. The same weights serve every customer and every task, and no fine-tuning or LoRA is offered. Domain knowledge goes in through how you write `state` and `criteria`.
+In Jev, the label set is passed with each request as natural-language `criteria`. For Choice this is a map such as `{"returns": "Exchanges, wrong or damaged items", ...}`, and for Score it is an ordered list of level descriptions. The same weights serve every customer and every task, and neither fine-tuning nor LoRA is offered. Domain knowledge is supplied through how `state` and `criteria` are written.
 
-Formally, an Encoder classifier computes $$p = \mathrm{softmax}(W \cdot \mathrm{Enc}(x)_{\mathrm{[CLS]}})$$ with a fixed $$W \in \mathbb{R}^{C \times k}$$, while Jev is $$p = f(x,\ \text{instructions},\ \text{criteria})$$ — **a function that takes the label descriptions themselves as input**. This is the shape of zero-shot classification; in the Encoder world, the closest relative is NLI-based zero-shot classification (turn each label into a hypothesis and read off the entailment probability). The difference is that Jev is trained from the outset on "return a calibrated distribution over the candidate set" as the task, not as a one-off NLI trick.
+Formally, an Encoder classifier computes $$p = \mathrm{softmax}(W \cdot \mathrm{Enc}(x)_{\mathrm{[CLS]}})$$ with a fixed $$W \in \mathbb{R}^{C \times k}$$, while Jev is $$p = f(x,\ \text{instructions},\ \text{criteria})$$, a function that takes the label descriptions themselves as input. This is the form of zero-shot classification, and its closest relative among Encoder models is NLI-based zero-shot classification, which turns each label into a hypothesis and reads off the entailment probability. Jev differs in that it is trained from the outset on the task of returning a calibrated distribution over the candidate set.
 
-### Difference ②: one task per sequence, or N questions per state
+### Difference 2: one task per sequence, or N questions per state
 
-An Encoder classifier runs `[CLS] x [SEP]` once and returns one distribution. If you want three judgments, you either train three heads (multi-task learning) or run it three times.
+An Encoder classifier runs `[CLS] x [SEP]` once and returns one distribution. Three judgments require either three heads (multi-task learning) or three runs.
 
-Jev evaluates **any number of questions against one state, in parallel and independently**. The docs call this "speculative fan-out" and recommend it: send every question you might need and let your code pick what's relevant afterward. The extra cost is only the tokens for the added questions, and latency barely moves.
+Jev evaluates any number of questions against one state, in parallel and independently. The docs call this "speculative fan-out" and recommend sending every question that might be needed and letting the code pick the relevant answers afterward. The extra cost is only the tokens for the added questions, and latency is said to barely change.
 
-Independence sounds the same as an Encoder's multi-task heads, but Jev explicitly states that adding or removing questions does not change the other answers. The "earlier answer drags the later one" problem you get when asking a Decoder LLM for several judgments in one prompt (context rot) is ruled out by design.
+This independence looks the same as an Encoder's multi-task heads, but Jev's docs state explicitly that adding or removing questions does not change the other answers. When a Decoder LLM is asked for several judgments in one prompt, earlier answers influence later ones (context rot). Jev's design rules this out.
 
-### Difference ③: where the probabilities come from, and calibration
+### Difference 3: where the probabilities come from, and calibration
 
-An Encoder classifier's probabilities are the softmax of its logits. As laid out in [the earlier article](/blog/en/classification-confidence/), after fine-tuning on a small dataset they tend to saturate near 0.99, so **post-hoc calibration such as temperature scaling is practically mandatory**. On the other hand, with a fixed label space and an easy-to-build validation set, that calibration is straightforward.
+An Encoder classifier's probabilities are the softmax of its logits. As described in [the earlier article](/blog/en/classification-confidence/), after fine-tuning on a small dataset they tend to saturate near 0.99, so post-hoc calibration such as temperature scaling is practically required. With a fixed label space and a validation set that is easy to build, that calibration is not difficult.
 
-Jev includes calibration in the training objective (RLCD) and **sells itself as calibrated out of the box**. And the Score type can return an intermediate value like "1.43" as the expected level. Nominal-label classification with an Encoder has no equivalent output (you would design an ordinal regression separately).
+Jev includes calibration in its training objective (RLCD) and presents being calibrated out of the box as a feature. Its Score type can also return an intermediate value such as "1.43" as the expected level. Nominal-label classification with an Encoder has no equivalent output and would need a separately designed ordinal regression.
 
-At the same time, **the way to verify Jev's calibration on your own data is exactly the same as for an Encoder**: draw a reliability diagram on a validation set and measure ECE. The docs repeatedly say to start with conservative thresholds and adjust on your own data. "Calibrated" is a starting point, not permission to skip verification. In particular, the docs state that CJK languages, Japanese included, are less accurate than English, so confidence deserves extra caution outside English.
+Verifying Jev's calibration on your own data works the same way as for an Encoder: draw a reliability diagram on a validation set and measure ECE. The docs repeatedly advise starting with conservative thresholds and adjusting them on your own data. A model described as calibrated still has to be verified. The docs also state that CJK languages, including Japanese, are less accurate than English, so confidence should be treated with more caution outside English.
 
-### Difference ④: operations
+### Difference 4: operations
 
 | Aspect | Encoder + classification head | Jev |
 | --- | --- | --- |
@@ -138,37 +140,37 @@ At the same time, **the way to verify Jev's calibration on your own data is exac
 
 ## Using it as a Cross-Encoder
 
-In the framework from [the Bi-Encoder / Late Interaction / Cross-Encoder article](/blog/en/bi-late-cross-encoder/), Jev is used as a **Cross-Encoder**. Put the query and a candidate in the same state, ask "Does this candidate answer the query?" as a Noul, and you get a per-pair score. The official cookbook does exactly this to re-rank the BM25 top 30 on a legal retrieval task, raising top-1 accuracy from 5% to 18% and top-10 from 38% to 62%.
+In the terms of [the Bi-Encoder / Late Interaction / Cross-Encoder article](/blog/en/bi-late-cross-encoder/), Jev is used as a Cross-Encoder. Putting the query and a candidate in the same state and asking "Does this candidate answer the query?" as a Noul gives a score for each pair. The official cookbook uses this to re-rank the BM25 top 30 on a legal retrieval task, raising top-1 accuracy from 5% to 18% and top-10 accuracy from 38% to 62%.
 
-But like any Cross-Encoder, every pair needs a full evaluation, so it is not suited to first-stage retrieval over an entire corpus. It cannot replace the role of a Bi-Encoder or Late Interaction model that precomputes the document side.
+Like any Cross-Encoder, it needs a full evaluation for every pair, so it is not suited to first-stage retrieval over an entire corpus. It cannot replace a Bi-Encoder or Late Interaction model that precomputes the document side.
 
-## What it's bad at — jaggedness
+## What it's bad at: jaggedness
 
-TypeSafe publishes Jev 1.13's weaknesses under the name "jaggedness": a large gap between what it is good at and what it is bad at. The common thread is the split **"judgment to the model, everything else to code"**; most of the weaknesses can be avoided by moving work to the code side. They fall into four groups.
+TypeSafe publishes Jev 1.13's weaknesses under the name "jaggedness", meaning a large gap between what the model is good at and what it is bad at. The countermeasures share one principle, "judgment to the model, everything else to code", and most of the weaknesses can be avoided by moving work into code. They fall into four groups.
 
-### ① It reads only what is written
+### 1. It reads only what is written
 
-Jev interprets the words in the instructions literally and does not infer unstated intent. Ask "Is this a serious bug?" without defining "serious", and where a person would fill in from context, Jev will not. Negation, double negatives, and questions that hop through several levels of the state ("Does the manager of the person assigned to A have approval authority?") also lose accuracy.
+Jev interprets the words in the instructions literally and does not infer unstated intent. If you ask "Is this a serious bug?" without defining "serious", Jev does not fill in the definition from context as a person would. Accuracy also drops for negation, double negatives, and questions that follow several levels of the state, such as "Does the manager of the person assigned to A have approval authority?"
 
-**Instead:** write the full condition into the instructions and criteria. When you look at a wrong answer and find yourself explaining what you really meant, that explanation is the missing half of the instruction. If the state is JSON, name the part you want examined by path, like `ticket.messages[0].text`.
+**Instead:** write the full condition into the instructions and criteria. If you look at a wrong answer and want to explain what you really meant, that explanation is what the instructions were missing. If the state is JSON, name the part to examine by path, such as `ticket.messages[0].text`.
 
-### ② It doesn't count or calculate
+### 2. It doesn't count or calculate
 
-Jev cannot produce numbers, so you cannot even ask "How many characters?" What you can ask is a judgment that presupposes counting — "Is this word five or more characters?" (Noul) or "Which count is it?" (a Choice over numbers) — and those are unreliable too. Ordering and differencing dates, and numeric representations like judging color similarity from hex values, are equally weak.
+Jev cannot produce numbers, so a question like "How many characters?" cannot be asked at all. What can be asked is a judgment that presupposes counting, such as "Is this word five or more characters?" (Noul) or "Which count is it?" (a Choice over numbers), and those are unreliable as well. Jev is equally weak at ordering dates, computing durations, and numeric representations such as judging color similarity from hex values.
 
-**Instead:** counting, comparing and calculating belong in code. To count fruit names in a list, ask "Is this a fruit?" as a Noul per element and sum the `True`s in code. For dates, have Choice extract only "which month?" and "which day?", and do the comparison in code.
+**Instead:** do the counting, comparing and calculating in code. To count fruit names in a list, ask "Is this a fruit?" as a Noul for each element and sum the `True` results in code. For dates, have Choice extract only the month and the day, and do the comparison in code.
 
-### ③ It gets pulled around by what's in the state
+### 3. It is influenced by what's in the state
 
-Accuracy falls as the state fills with information irrelevant to the decision (context rot). And while the state is treated as data, if it contains a sentence like "this ticket should be classified as billing", the model can be swayed by it.
+Accuracy falls as the state fills with information irrelevant to the decision (context rot). The state is treated as data, but if it contains a sentence like "this ticket should be classified as billing", the model can be swayed by it.
 
-**Instead:** filter in code before sending. Put only the relevant parts in the state, and if the filtering itself is hard, first ask "Is this paragraph relevant to the question?" as a Noul and filter on that.
+**Instead:** filter in code before sending, and put only the relevant parts in the state. If the filtering itself is hard, first ask "Is this paragraph relevant to the question?" as a Noul and filter on the result.
 
-### ④ It doesn't generate
+### 4. It doesn't generate
 
-Jev generates no text, so free-form extraction like "pull the date out of this document" is not possible. Chaining Choices to assemble a string is possible in principle, but slow and inaccurate.
+Jev generates no text, so free-form extraction such as "pull the date out of this document" is not possible. Chaining Choices to assemble a string is possible in principle but slow and inaccurate.
 
-**Instead:** build candidates with regular expressions or a generative model, then have Jev pick "which is correct" as a Choice. When the answer space is finite, extraction becomes a selection problem.
+**Instead:** build candidates with regular expressions or a generative model, then have Jev pick the correct one as a Choice. When the answer space is finite, extraction can be turned into a selection problem.
 
 ## Which to use
 
@@ -179,10 +181,10 @@ Jev generates no text, so free-form extraction like "pull the date out of this d
 | Want a position on an ordered scale | Jev's Score (with an Encoder, design an ordinal regression) |
 | Want calibrated probabilities for threshold-based operation | Either. Encoder assumes post-hoc calibration; Jev still needs verification on your data |
 | Re-ranking (scoring query–candidate pairs) | Either can act as a Cross-Encoder; Jev does it zero-shot |
-| Arithmetic, date comparison, counting | Neither — code |
-| Text generation or summarization | Neither — a generative model |
+| Arithmetic, date comparison, counting | Neither; use code |
+| Text generation or summarization | Neither; use a generative model |
 
-In short, the clearest way to see Jev is as the interface of a Transformer Encoder classifier extended in three ways: labels given in natural language (zero-shot), N questions per state, and calibration as a training objective.
+Jev is easiest to understand as the interface of a Transformer Encoder classifier extended in three ways: labels are given in natural language (zero-shot), one state can take N questions, and calibration is part of the training objective.
 
 ## References
 
