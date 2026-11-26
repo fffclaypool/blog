@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A Systematic Guide to Evaluating LLM Chatbot Accuracy"
-description: "An LLM chatbot's 'accuracy' is not one number. Measure each component (retrieval, scope check, generation) and each kind of failure (correctness, faithfulness, helpfulness, policy compliance) with its own metric, evaluation data and judge. Covers the biases of LLM-as-a-judge and how to validate it, how large an evaluation set needs to be and where to get it, the division of labor between offline evaluation and online metrics, and how to run it all in Langfuse."
+description: "A single number is a poor description of an LLM chatbot's accuracy. This article goes through how to measure each component (retrieval, scope check, generation) and each kind of failure (correctness, faithfulness, helpfulness, policy compliance) with its own metric, evaluation data and judge. It also covers the biases of LLM judges and how to validate them, how to size and build an evaluation set, how offline evaluation and online metrics divide the work, and how to run the process in Langfuse."
 date: 2026-09-26 18:00:00
 lang: en
 ref: chatbot-evaluation
@@ -10,48 +10,48 @@ translation: /ja/chatbot-evaluation/
 translation_label: "日本語"
 ---
 
-A chatbot's "accuracy" is not one number. Did retrieval find the right document? Is the answer grounded in it? Does it fully answer the question? Did the bot decline the questions it should decline? These are different failures of different components, and averaging them into one figure hides where to fix.
+A single number is a poor description of a chatbot's accuracy. Whether retrieval found the right document, whether the answer is grounded in it, whether it fully answers the question, and whether the bot declined what it should decline are separate failures in separate components. Averaged into one figure, they no longer show what to fix.
 
-Evaluation is the work of measuring, separately, which component produces which kind of failure and how often. Give each component its own metric, evaluation data and judge; use an offline evaluation set to block regressions on every change; and watch real user behavior online. What follows is how to put that together.
+This article goes through how to measure each component and each kind of failure with its own metric, evaluation data and judge. An offline evaluation set catches regressions when something changes, and online metrics show how real users behave.
 
 ## Separate the definitions of "correct" first
 
-Wrong answers are wrong in different ways.
+Answers can be wrong in different ways, so the kinds are named first.
 
-Correctness asks whether the answer matches the facts; you check it against a reference. Faithfulness asks whether the answer follows from the provided context; it can be judged without a reference as long as the context is available. In RAG the two can diverge. An answer can be faithful to a context that is itself out of date and factually wrong. An answer can be factually right yet drawn from knowledge not in the context, meaning the model filled it in on its own. The first is an index problem, the second a generation problem, and they are fixed in different places.
+Correctness is whether the answer matches the facts, and it is measured against a reference answer. Faithfulness is whether the answer follows from the context the model was given, and it can be judged without a reference as long as the context is available. In RAG the two can diverge. An answer that is faithful to an out-of-date context is an index problem. An answer that is factually right but relies on knowledge outside the context is a generation problem.
 
-Helpfulness asks whether the answer covers the question without padding. "Yes, you can return it" is correct but useless to a customer who asked about the deadline. Policy compliance asks whether out-of-scope and harmful questions are declined, and whether in-scope questions are not declined too often. Format asks whether the specified JSON, length and tone are respected.
+Helpfulness is whether the answer covers what was asked without gaps or padding. Replying "Yes, you can return it" to a customer who asked about the return deadline is correct and does not help. Policy compliance is whether the bot declines out-of-scope and harmful questions without declining in-scope ones. Format is whether the output follows the specified JSON, length and tone.
 
-[The previous article](/blog/en/rag-lora-finetuning/) split chatbot failures into "doesn't know" and "behaves wrong". Correctness and faithfulness belong to the first; helpfulness, policy and format to the second. Dividing the evaluation along the same line lets you read the remedy off the result.
+[The previous article](/blog/en/rag-lora-finetuning/) divided chatbot failures into "doesn't know" and "behaves wrong". Correctness and faithfulness fall under "doesn't know", and helpfulness, policy compliance and format fall under "behaves wrong". With the same division in the evaluation, a result points directly to the kind of fix it needs.
 
 ## Measure per component
 
 <figure>
   <img src="{{ '/assets/img/eval-pipeline-en.svg' | relative_url }}" alt="Chatbot pipeline with per-component metrics. A query passes through scope check, retrieval and generation. The scope check is measured by over-refusal and leak rates, retrieval by Recall@k and MRR/nDCG, generation by correctness, faithfulness, helpfulness and format. The whole is measured by end-to-end task success and by production escalation rates and A/B tests">
-  <figcaption>Upstream failures cannot be recovered downstream, so evaluate the scope check, retrieval and generation one at a time in that order, then end to end.</figcaption>
+  <figcaption>An upstream failure cannot be recovered downstream, so the scope check, retrieval and generation are evaluated one at a time in that order, and then the pipeline is measured end to end.</figcaption>
 </figure>
 
-The pipeline runs scope check, retrieval, generation. An upstream failure cannot be recovered downstream. If retrieval misses the right document, no amount of cleverness in generation produces the right answer. So evaluate from upstream, one component at a time.
+The pipeline runs the scope check, then retrieval, then generation. If retrieval misses the right document, generation cannot produce the right answer however capable the model is. The evaluation therefore starts upstream and takes one component at a time.
 
 ### Retrieval: does the gold passage make it into the top k?
 
-The evaluation data is (query, passage containing the answer) pairs, with the gold passage labeled by a person. The main metric is Recall@k. If the top $$k$$ go into the prompt and the gold passage is not among them, generation has no chance. Use MRR or nDCG when rank matters. The definitions are in [the article on IR metrics](/blog/en/information-retrieval-metrics/).
+The evaluation data is a set of (query, passage containing the answer) pairs, with the gold passage labeled by a person. The central metric is Recall@k. If the top $$k$$ passages go into the prompt and the gold passage is not among them, generation has almost no chance of answering correctly. MRR or nDCG can be added when rank matters. Their definitions are in [the article on IR metrics](/blog/en/information-retrieval-metrics/).
 
-This evaluation is deterministic and runs without calling an LLM. It finishes in seconds, so run it every time you change chunking, the embedding model or the reranker.
+This evaluation does not call an LLM and gives the same result every time. It finishes in seconds, so it is run after every change to chunking, the embedding model or the reranker.
 
-### Scope check: count over-rejection and leakage separately
+### Scope check: count over-refusal and leakage separately
 
-The scope check is a classification problem, so look at the confusion matrix. Report the rate at which in-scope questions are refused (over-refusal) and the rate at which out-of-scope questions get through, and do not blend them into one accuracy figure. For an e-commerce site, over-refusal is lost sales and leakage is brand or legal risk; the weights differ.
+The scope check is a classification problem, so it is evaluated with a confusion matrix. The rate of refused in-scope questions (over-refusal) and the rate of out-of-scope questions that get through are reported separately. On an e-commerce site, over-refusal costs sales and leakage creates brand or legal risk, so the two errors do not weigh the same.
 
-Over-refusal is the one that gets missed. If you evaluate only on in-scope questions, excessive refusal never shows up. Röttger et al. (2024) built XSTest, a set of harmless questions phrased to look unsafe, to measure exactly that. Apply the same idea to your domain: collect legitimate questions that look borderline. If the decision comes as a probability, tune the threshold and calibration by the procedure in [the article on classifier confidence](/blog/en/classification-confidence/).
+Over-refusal is the easier one to miss. If the evaluation set contains only typical in-scope questions and obviously out-of-scope ones, refusals of legitimate questions that merely look out of scope do not show up in the numbers. XSTest (Röttger et al., 2024) is a test set of harmless questions worded to look unsafe, built to measure this. The same approach applies to a product domain: collect legitimate questions that look borderline and add them to the evaluation set. If the scope check outputs a probability, the threshold and calibration are tuned with the procedure in [the article on classifier confidence](/blog/en/classification-confidence/).
 
 ### Generation: check against a reference or against the context
 
-Generation is the hardest to evaluate because the answer is free text.
+Generation takes the most effort to evaluate because its output is free text.
 
-For questions with a reference answer ("the return window is 14 days"), measure agreement with the reference. Exact match or token F1 for short answers. Since you want to accept different wording with the same meaning, in practice an LLM is often asked "does this say the same thing as the reference?". N-gram overlap metrics such as BLEU and ROUGE correlate poorly with human judgment on free-text answers and should not be the primary metric.
+Questions with a reference answer, such as "the return window is 14 days", are measured by agreement with the reference. Exact match or token-level F1 works for short answers. Different wording with the same meaning should still count as correct, so in practice an LLM is often asked whether the answer says the same thing as the reference. BLEU and ROUGE correlate poorly with human judgment on free-text answers and are not used as the main metric.
 
-For questions where a reference is hard to write, switch to checking against the context. Split the answer into individual claims, judge whether each follows from the retrieved passages, and use the fraction of supported claims as the faithfulness score.
+Questions without a practical reference are checked against the context. The answer is split into individual claims, each claim is judged on whether it follows from the retrieved passages, and the fraction of supported claims is the faithfulness score.
 
 $$
 \mathrm{faithfulness} = \frac{\text{claims supported by the context}}{\text{claims in the answer}}
@@ -59,40 +59,40 @@ $$
 
 <figure>
   <img src="{{ '/assets/img/claim-faithfulness-en.svg' | relative_url }}" alt="Claim-level faithfulness. The answer is split into four claims and each is checked against the retrieved passages. Three are supported and one is not, so faithfulness is 3/4 = 0.75">
-  <figcaption>Split the answer into claims and check each one against the context. More stable than scoring the whole answer, and it shows which claim lacks support.</figcaption>
+  <figcaption>The answer is split into claims and each one is checked against the context. This is more stable than scoring the whole answer and identifies the unsupported claim.</figcaption>
 </figure>
 
-RAGAS (Es et al., 2023) and FActScore (Min et al., 2023) take this form. Working at the claim level pinpoints which part is unsupported, is more stable than giving the whole answer a score from 1 to 5, and tells you what to fix.
+RAGAS (Es et al., 2023) and FActScore (Min et al., 2023) both work this way. Claim-level judgments vary less than a 1-to-5 score for the whole answer, and they identify the unsupported part.
 
-Helpfulness is judged on the (question, answer) pair: does it answer the question, and is anything missing? RAGAS generates questions back from the answer and uses their similarity to the original as answer relevance, but in practice a rubric that states "does this answer settle the customer's business?" and an LLM scoring against it fits the purpose better.
+Helpfulness is judged from the question and the answer together: whether the answer addresses the question and whether anything needed is missing. RAGAS generates questions back from the answer and uses their similarity to the original question as answer relevance. In practice, an LLM scoring against a rubric criterion such as "does this answer settle what the customer came for?" usually fits the purpose better.
 
-Format is checked mechanically. Schema validation for JSON, character counts for length, regular expressions for forbidden phrases. There is no need to ask an LLM, and not asking is more reliable.
+Format is checked with code. Schema validation for JSON, a character count for length and regular expressions for forbidden phrases are more reliable than asking an LLM.
 
 ### Finally, measure end to end
 
-Every component can score well and the combination can still be bad. Retrieval returns five passages including the right one, but the model is pulled off course by the other four: that failure is visible only end to end. Evaluate from question to final answer in one pass and compare against the component scores. A gap means the problem is at a seam between components.
+Components can each score well while the combined result is poor. For example, retrieval returns five passages including the right one, and the model still answers wrongly because of the other four. Component-level evaluation does not detect this. The pipeline is therefore also evaluated from question to final answer, and a gap between that result and the component scores points to the hand-off between components.
 
-For multi-turn conversations, separate per-turn evaluation, where each turn is judged given the history so far, from whole-conversation evaluation, where the question is whether the user's business got done. The latter is the task success rate, judged per conversation by a person or a model.
+Multi-turn conversations are evaluated per turn and as a whole. Per turn, the response is judged given the history so far. For the whole conversation, a person or a model judges whether the user got what they came for, and the results are reported as a task success rate.
 
 ## Choosing the judge
 
-Wherever a deterministic judgment is available, use it. Exact match, schema validation, regular expressions, retrieval recall. They are reproducible, free and unbiased.
+Anything that can be judged deterministically should be: exact match, schema validation, regular expressions and retrieval recall. These checks are reproducible, cost almost nothing and do not depend on a judge's tendencies.
 
-For free text, use an LLM. Zheng et al. (2023) had GPT-4 judge which of two answers was better and found agreement with human judges above 80%, on par with agreement between humans. It works, but it has habits.
+Free text is judged by an LLM. Zheng et al. (2023) found that GPT-4's judgments of which of two answers was better agreed with human judges a little over 80% of the time, about as often as humans agree with each other. LLM judges do have known biases, and each needs a countermeasure.
 
-Shown two answers side by side, it tends to pick the one presented first (Wang et al., 2023); judge twice with the order swapped and keep only agreeing verdicts. It tends to rate longer answers higher, so write "penalize unnecessary information" into the rubric and measure length separately. When the judge and the generator are the same model, it rates its own output higher (Panickssery et al., 2024), so judge with a different model. Absolute scores on a 1 to 10 scale drift; pass/fail or A-versus-B comparisons are more stable. Having the model spell out its evaluation steps, as in G-Eval (Liu et al., 2023), helps somewhat.
+A judge comparing two answers tends to prefer the one presented first (Wang et al., 2023). Judge twice with the order swapped and keep the verdict only when both runs agree. Judges also rate longer answers higher, so the rubric should penalize unnecessary information, and length should be measured separately. A model rates its own output higher (Panickssery et al., 2024), so the judge should be a different model from the generator. Absolute scores on a 1-to-10 scale are applied inconsistently, so pass/fail or A-versus-B comparisons are preferable. Having the model write out its evaluation steps, as in G-Eval (Liu et al., 2023), also helps to some extent.
 
-What must not be forgotten is that an LLM judge is itself a classifier. Measure its accuracy before trusting it. Take 100 to 200 human-labeled examples, compute agreement (Cohen's κ or similar), and revise the rubric if it is low. ARES (Saad-Falcon et al., 2024) formalizes the same idea: a small set of human labels corrects the bias of LLM judgments and yields confidence intervals.
+An LLM judge is itself a classifier, so its accuracy is checked before use. Compute its agreement with 100 to 200 human-labeled examples (Cohen's κ, for example) and revise the rubric if agreement is low. ARES (Saad-Falcon et al., 2024) turns this idea into a framework that uses a small set of human labels to correct the bias in LLM judgments and produce confidence intervals.
 
-Human evaluation is the most reliable and the most expensive. Limit its role to producing the labels that validate the LLM judge and to periodic audits. Reviewing everything by hand does not last.
+Human evaluation is the most reliable option and the most expensive. Reviewing every response by hand is not sustainable, so human effort goes to labeling the examples that validate the LLM judge and to periodic audits.
 
 ## Building the evaluation set
 
-Where do the questions come from? Production logs first, anonymized and kept in the users' own wording. Before launch, when there are no logs, have an LLM generate questions from the FAQ or documents. Generated questions echo the documents' wording, though, so retrieval recall comes out higher than reality. Replace them as logs accumulate.
+Questions should come from production logs where possible, anonymized and kept in the users' own wording. Before launch, when there are no logs, an LLM can generate questions from the FAQ or the documents. Generated questions reuse the documents' wording, so retrieval recall measured on them is higher than it will be in production. They are replaced once logs accumulate.
 
-Stratify by kind: intent (shipping, returns, payment), out of scope, ambiguous, legitimate-but-borderline, injection attempts, multi-turn. Looking only at the overall average dilutes failures in low-volume categories like returns and payments. Categories with high business cost get their own tally even when the counts are small.
+Questions are grouped into strata: intent (shipping, returns, payment and so on), out-of-scope questions, ambiguous questions, legitimate questions that look borderline, prompt-injection attempts and multi-turn conversations. An overall average hides failures in low-volume categories such as returns and payments. Categories with a high business cost are tallied separately even when they are small.
 
-How many? The standard error of an accuracy $$p$$ estimated from $$n$$ examples is $$\sqrt{p(1-p)/n}$$, so at $$p = 0.8$$ the 95% confidence interval is:
+The number of questions needed is estimated from the sampling error. The standard error of an accuracy $$p$$ estimated from $$n$$ examples is $$\sqrt{p(1-p)/n}$$, so at $$p = 0.8$$ the 95% confidence interval is as follows.
 
 | n | 95% CI |
 | --- | --- |
@@ -101,64 +101,69 @@ How many? The standard error of an accuracy $$p$$ estimated from $$n$$ examples 
 | 400 | ±4 pt |
 | 1000 | ±2.5 pt |
 
-With 100 examples a 5-point improvement disappears into noise. Per-stratum figures depend on the stratum's own count, so aim for at least 100 per intent. When comparing two configurations, though, pairing them on the same question set and taking the difference needs far fewer examples.
+With 100 examples, a 5-point improvement cannot be told apart from noise. The error for a stratum depends on that stratum's count, so 100 or more per intent is a reasonable target. When two configurations are compared on the same questions and the difference is taken per question, far fewer examples are enough.
 
-Freeze the evaluation set and version it. Using its questions as few-shot examples or for prompt tuning inflates the score on exactly those questions and makes it meaningless. Keep a development set you look at repeatedly and a test set you look at only at the end.
+The evaluation set is frozen and versioned. If its questions are used as few-shot examples or for prompt tuning, the score rises on those questions only and stops meaning anything. A development set for repeated use and a test set for the final check are kept separately.
 
 ## Offline and online: who does what
 
-Offline evaluation exists to block regressions. Whenever the prompt, the model, the index or the chunking changes, run the evaluation set and compare against the baseline. Put it in CI and refuse to merge below the threshold. Run deterministic metrics every time and LLM judgments only on the main strata, and the cost stays manageable.
+The purpose of offline evaluation is to catch regressions before they reach production. Whenever the prompt, the model, the index or the chunking changes, the evaluation set is run and compared with the baseline. It runs in CI, and changes that fall below a threshold are not merged. Running deterministic metrics every time and LLM judgments only on the main strata keeps the cost down.
 
-Online metrics tell you what is happening on questions that are not in the evaluation set. Available signals are the thumbs-up/down buttons, the escalation-to-human rate, the rate of rephrased questions, and the rate of conversations that end with the user's business done. All are indirect, and the people who press feedback buttons are a biased sample. The most trustworthy is an A/B test: split users between configurations A and B and compare escalation or resolution rates.
+Online metrics show what happens on questions that are not in the evaluation set. The available signals include thumbs-up/down buttons, the rate of escalation to a human, the rate at which users rephrase a question, and the share of conversations that end with the request resolved. All of them are indirect, and feedback buttons are pressed by a biased subset of users. The most trustworthy way to compare two configurations is an A/B test that splits users between them and compares escalation or resolution rates.
 
-Periodically sample production traffic and run the same judgments as offline. Check whether the distribution has shifted or new kinds of questions are appearing, and add them to the evaluation set. The evaluation set is not built once; it is grown from logs.
+Production traffic is also sampled periodically and run through the same judgments as the offline set. Shifts in the distribution and new kinds of questions found this way are added to the evaluation set.
 
 ## Langfuse puts it on one screen
 
-If one tool is to carry all of the above, I use Langfuse. It is open source (MIT), self-hostable with Docker Compose, and also offered as a cloud service. Traces, scores, datasets and human annotation live on the same screen, so the offline-online loop from the previous section can be built as is.
+For running all of this in one tool, my choice is Langfuse. It is open source under the MIT license, can be self-hosted with Docker Compose, and is also available as a cloud service. Traces, scores, datasets and human annotation are handled on the same screen.
 
 ### Record each component in the trace
 
-Send traces from the Python or JS SDK, or via OpenTelemetry. One request becomes one trace, and inside it the scope decision, the chunks retrieval returned, and the prompt and output of generation are nested. Integrations for LangChain, LlamaIndex, the OpenAI SDK and others mean a few added lines are usually enough. Multi-turn conversations are grouped into sessions, which serves conversation-level evaluation.
-
-Measuring per component requires per-component records. The trace is that foundation.
+Traces are sent from the Python or JS SDK, or through OpenTelemetry. One request becomes one trace, and the scope decision, the retrieved chunks, and the prompt and output of generation are recorded as nested steps inside it. Integrations exist for LangChain, LlamaIndex, the OpenAI SDK and others, so a few added lines are often enough. Multi-turn conversations are grouped into sessions, which can be used for conversation-level evaluation. These records are what per-component evaluation runs on.
 
 ### Collect scores from every source in one place
 
-In Langfuse every evaluation result is attached to a trace as a score. Deterministic judgments such as Recall@k or schema validation are sent from the SDK. For LLM judges, register an evaluation template in Langfuse and it runs automatically on a sample of production traces. Human labels come from the annotation queue described next. End-user thumbs can also be sent as scores from the SDK.
+In Langfuse, every evaluation result is attached to a trace as a score. Results of Recall@k or schema validation are sent from the SDK. An LLM judge registered as an evaluation template runs automatically on a sample of production traces. Human labels are added through the annotation queue described below. End-user thumbs can also be sent as scores from the SDK.
 
-Because scores from different sources sit side by side on the same trace, computing agreement between the LLM judge and human labels is a matter of filtering and exporting. "Measure the judge before trusting it" needs no special machinery.
+Scores from different sources sit on the same trace, so agreement between the LLM judge and human labels can be computed by filtering and exporting from the UI.
 
 ### Run human labeling through annotation queues
 
-First define the scores: name, type (numeric, categorical, boolean) and allowed range, so that reviewers label consistently. Then put the traces to be labeled into a queue by filter or sampling. Reviewers open the queue and label each item in turn while looking at the question, the retrieved passages and the answer. Labels are stored directly as scores.
+The first step is to define the scores. Fixing the name, the type (numeric, categorical or boolean) and the allowed range reduces variation between reviewers. Next, the traces to be labeled are put into a queue by filter or sampling. Reviewers label the items in order while looking at the question, the retrieved passages and the answer, and each label is saved as a score.
 
-Uses: the 100 to 200 labels for validating the LLM judge, periodic audits, and sorting borderline questions. Routing only traces with low judge scores into the queue keeps the human workload small while revealing where the judge tends to be wrong.
+The main uses are producing the 100 to 200 labels that validate the LLM judge, periodic audits, and sorting borderline questions. Sending only traces with low judge scores to the queue keeps the review load small and shows where the judge tends to be wrong.
 
 ### Turn traces directly into the evaluation set
 
-From the trace view, "add to dataset" turns the question and its context into an evaluation item. The expected output can be edited afterwards. "Grow the evaluation set from logs" in the previous section is this operation, repeated.
+Choosing "add to dataset" in the trace view turns that question and its context into an evaluation item. The expected output can be edited afterwards. This is how the evaluation set is updated from logs.
 
-Against a dataset you run experiments (runs) from the SDK and compare runs side by side in the UI. Prompts are versioned, so you can trace which prompt produced which run. The regression routine, run on every change and compare with the baseline, lives here too.
+Experiments (runs) are executed against a dataset from the SDK and compared side by side in the UI. Prompts are versioned too, so each run can be traced back to the prompt that produced it.
 
-### The shape of the routine
+### The overall routine
 
-Run the LLM judge on a sample of production traces, route the low-scoring ones into the annotation queue, have people label them, and add what is needed to the dataset. On every change, run the dataset and compare with the previous run. This loop closes inside the Langfuse UI. Swap the tool and the shape stays the same.
+The LLM judge runs on a sample of production traces, low-scoring traces go to the annotation queue for human labels, and the ones worth keeping are added to the dataset. After a configuration change, the dataset is run and compared with the previous run. The routine does not depend on Langfuse and can be set up the same way with another tool.
 
 ## Pitfalls
 
-Arguing from the average alone leaves you unable to tell which component to fix. When a number moves, go back to the per-component numbers first.
+These problems come up often in evaluation design.
 
-If the generator and the judge are the same model, self-preference inflates the score. If the evaluation set was generated from the index, retrieval recall is overstated. If only in-scope questions are evaluated, over-refusal is invisible. If evaluation questions leak into the prompt, scores rise while production does not change. If costs are averaged across intents, expensive failures in returns or payments are diluted. Every one of these is avoided by deciding the evaluation design up front.
+- Looking only at the average score. It does not show which component to fix, so when a number moves, check the per-component numbers first.
+- Using the same model as generator and judge. The judge favors its own output, and the score comes out too high.
+- Evaluating retrieval with questions generated from the indexed documents. Recall is overstated.
+- Leaving borderline-looking legitimate questions out of the evaluation set. Over-refusal goes undetected.
+- Using evaluation questions as few-shot examples or for prompt tuning. The score rises and production quality does not.
+- Averaging across intents without regard to their cost. Expensive failures in returns or payments become hard to see.
 
 ## Procedure
 
-1. Collect failures. Gather wrong answers from logs or from expectation and sort them into correctness, faithfulness, helpfulness, policy and format.
-2. Build evaluation data per component: (query, gold passage) for retrieval, (query, label) for the scope check, (query, context, reference or rubric) for generation.
-3. Start with deterministic metrics: Recall@k, the confusion matrix, schema validation.
-4. Build the LLM judge and validate it against human labels before using it.
-5. Wire it into CI and compare against the baseline on every change.
-6. In production, watch online metrics and feed samples back into the evaluation set.
+1. Collect failures. Gather wrong answers from logs, or from anticipated questions if there are no logs yet, and classify each as a correctness, faithfulness, helpfulness, policy or format failure.
+2. Build evaluation data for each component: (query, gold passage) for retrieval, (query, label) for the scope check, and (query, context, reference or rubric) for generation.
+3. Start with the deterministic metrics: Recall@k, the confusion matrix and schema validation.
+4. Build the LLM judge and check it against human labels before using it.
+5. Put the evaluation in CI and compare against the baseline on every change.
+6. In production, watch online metrics and add samples to the evaluation set.
+
+The table below lists the metric, data and judge for each item.
 
 | What | Metric | Data | Judge |
 | --- | --- | --- | --- |
@@ -171,7 +176,7 @@ If the generator and the judge are the same model, self-preference inflates the 
 | End to end | task success rate | conversations | human or LLM |
 | Production | escalation rate, rephrase rate, A/B | logs | user behavior |
 
-Any one-line statement of "accuracy" ends up being this table with its rows filled in. If a single number is unavoidable, weight the rows by business cost and add them up. That number cannot tell you where to fix, so keep the one-line figure for reporting and the table for development.
+Describing a chatbot's "accuracy" means reporting a number for each row of this table. If a single number is required, the rows can be weighted by business cost and summed. That number does not show what to fix, so the single figure for reporting and the table for development are kept separately.
 
 ## References
 
