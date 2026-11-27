@@ -22,9 +22,10 @@ $$
 
 $$T$$ is a temperature parameter, normally set to $$T = 1$$ during training. Raising $$T$$ flattens the distribution (less confident), and lowering it sharpens the distribution (more confident).
 
-![The logit-to-softmax transformation: the ranking and gaps between scores are preserved, but frequency-level correctness is not guaranteed]({{ '/assets/img/logits-softmax-en.svg' | relative_url }})
-
-*Softmax projects relative scores onto the probability simplex. Adding a constant to all of $$z$$ leaves $$p$$ unchanged (shift invariance), so $$p$$ is determined only by the differences between logits.*
+<figure>
+  <img src="{{ '/assets/img/logits-softmax-en.svg' | relative_url }}" alt="The logit-to-softmax transformation: the ranking and gaps between scores are preserved, but frequency-level correctness is not guaranteed">
+  <figcaption>Softmax projects relative scores onto the probability simplex. Adding a constant to all of \(z\) leaves \(p\) unchanged (shift invariance), so \(p\) is determined only by the differences between logits.</figcaption>
+</figure>
 
 Softmax does two things: it maps every score to a positive number with the exponential, and it normalizes the results to sum to 1. The output is a set of non-negative numbers that sum to 1, so it meets the formal requirements of a probability distribution. That is a matter of form, though, and it does not give the numbers a frequency interpretation automatically.
 
@@ -40,9 +41,10 @@ $$
 
 The standard visualization is the reliability diagram. Confidence values are binned, and each bin's mean confidence is plotted against its actual accuracy. Points on the diagonal are ideal, and points below it mean the model is overconfident. The weighted average of the per-bin gaps is the ECE (Expected Calibration Error), the most common calibration metric.
 
-![Reliability diagram: an overconfident model's curve sinks below the diagonal]({{ '/assets/img/reliability-diagram-en.svg' | relative_url }})
-
-*A reliability diagram. In the typical overconfidence pattern, predictions made with confidence 0.95 turn out to be only 0.82 accurate.*
+<figure>
+  <img src="{{ '/assets/img/reliability-diagram-en.svg' | relative_url }}" alt="Reliability diagram: an overconfident model's curve sinks below the diagonal">
+  <figcaption>A reliability diagram. In the typical overconfidence pattern, predictions made with confidence 0.95 turn out to be only 0.82 accurate.</figcaption>
+</figure>
 
 Modern deep neural networks are systematically overconfident (Guo et al., 2017). That work showed that calibration degrades as models grow larger and deeper. It also showed that temperature scaling, which learns a single temperature $$T$$ on a validation set, is an effective correction.
 

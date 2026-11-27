@@ -22,5 +22,5 @@
   <text x="530" y="88" font-size="12" fill="#15232E">スコアの順位と差</text>
   <text x="530" y="118" font-size="12" fill="#3D4E5C">保証されないもの:</text>
   <text x="530" y="140" font-size="12" fill="#E0662C">頻度としての正しさ</text>
-  <text x="30" y="190" font-size="12" fill="#6B7A86">z 全体に定数を足しても p は不変（平行移動不変性）。p はロジットの「差」だけで決まる。</text>
+  <text x="30" y="190" font-size="12" fill="#6B7A86">z 全体に定数を足しても p は不変（平行移動不変性）。p は logit の「差」だけで決まる。</text>
 </svg>

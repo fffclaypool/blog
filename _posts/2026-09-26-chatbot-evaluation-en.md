@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A Systematic Guide to Evaluating LLM Chatbot Accuracy"
-description: "A single number is a poor description of an LLM chatbot's accuracy. This article goes through how to measure each component (retrieval, scope check, generation) and each kind of failure (correctness, faithfulness, helpfulness, policy compliance) with its own metric, evaluation data and judge. It also covers the biases of LLM judges and how to validate them, how to size and build an evaluation set, how offline evaluation and online metrics divide the work, and how to run the process in Langfuse."
+description: "A single number is a poor description of an LLM chatbot's accuracy. This article goes through how to measure each component (retrieval, scope check, generation) and each kind of failure with its own metric, evaluation data and judge, including how to validate LLM judges and how offline evaluation and online metrics divide the work."
 date: 2026-09-26 18:00:00
 lang: en
 ref: chatbot-evaluation
