@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Bi-Encoder / Late Interaction / Cross-Encoder の違い：精度とレイテンシを数式で比べる"
-description: "Bi-Encoder・Late Interaction・Cross-Encoder の精度とレイテンシの違いを、クエリと文書がどこで相互作用するか（スコア関数を分離できるか）という観点から数式で整理する。"
+title: "Bi-Encoder, Late Interaction, Cross-Encoder の違い：精度とレイテンシの比較"
+description: "Bi-Encoder, Late Interaction, Cross-Encoder の精度とレイテンシの違いを、クエリと文書がどこで相互作用するか（スコア関数を分離できるか）という観点から数式で整理する。"
 date: 2026-06-13 12:00:00
 lang: ja
 ref: bi-late-cross
@@ -10,7 +10,7 @@ translation: /en/bi-late-cross-encoder/
 translation_label: "English"
 ---
 
-ニューラル検索や再ランキングでは、クエリ $$q$$ と文書 $$d$$ の関連度をスコア $$s(q, d) \in \mathbb{R}$$ として返すモデルが使われる。Bi-Encoder、Late Interaction、Cross-Encoder はいずれもこのスコアを計算する方式で、精度とレイテンシが大きく異なる。この記事では、その違いが「クエリと文書がどこで相互作用するか」から導かれることを、数式で見ていく。
+ニューラル検索や再ランキングでは、クエリ $$q$$ と文書 $$d$$ の関連度をスコア $$s(q, d) \in \mathbb{R}$$ として返すモデルが使われる。Bi-Encoder, Late Interaction, Cross-Encoder はいずれもこのスコアを計算する方式で、精度とレイテンシが大きく異なる。この記事では、その違いが「クエリと文書がどこで相互作用するか」から導かれることを、数式で見ていく。
 
 ## 記法と問題設定
 
@@ -103,7 +103,7 @@ $$
 精度も中間になる。トークン単位の対応を残すので、Bi-Encoder の単一ベクトルの内積より表現力が高い。一方で、全層で相互作用する Cross-Encoder には及ばない。
 
 <figure>
-  <img src="{{ '/assets/img/bi-late-cross.svg' | relative_url }}" alt="Bi-Encoder・Late Interaction・Cross-Encoder の3方式の構造比較。BiとLateは独立した2つのエンコーダ塔を持ち最後に相互作用するのに対し、Crossは結合入力を単一のエンコーダに通す">
+  <img src="{{ '/assets/img/bi-late-cross.svg' | relative_url }}" alt="Bi-Encoder, Late Interaction, Cross-Encoder の3方式の構造比較。BiとLateは独立した2つのエンコーダ塔を持ち最後に相互作用するのに対し、Crossは結合入力を単一のエンコーダに通す">
   <figcaption>3方式の構造。Bi と Late は独立した2つのエンコーダ塔を持ち、相互作用を最後に置くので、文書側を事前計算でき、クエリ時の計算が軽い。Cross は最初から結合して1つのエンコーダに通すので、毎回モデル全体を実行する。</figcaption>
 </figure>
 

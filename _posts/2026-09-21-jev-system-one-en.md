@@ -140,7 +140,7 @@ Verifying Jev's calibration on your own data works the same way as for an Encode
 
 ## Using it as a Cross-Encoder
 
-In the terms of [the Bi-Encoder / Late Interaction / Cross-Encoder article](/blog/en/bi-late-cross-encoder/), Jev is used as a Cross-Encoder. Putting the query and a candidate in the same state and asking "Does this candidate answer the query?" as a Noul gives a score for each pair. The official cookbook uses this to re-rank the BM25 top 30 on a legal retrieval task, raising top-1 accuracy from 5% to 18% and top-10 accuracy from 38% to 62%.
+In the terms of [the Bi-Encoder, Late Interaction, Cross-Encoder article](/blog/en/bi-late-cross-encoder/), Jev is used as a Cross-Encoder. Putting the query and a candidate in the same state and asking "Does this candidate answer the query?" as a Noul gives a score for each pair. The official cookbook uses this to re-rank the BM25 top 30 on a legal retrieval task, raising top-1 accuracy from 5% to 18% and top-10 accuracy from 38% to 62%.
 
 Like any Cross-Encoder, it needs a full evaluation for every pair, so it is not suited to first-stage retrieval over an entire corpus. It cannot replace a Bi-Encoder or Late Interaction model that precomputes the document side.
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Bi-Encoder / Late Interaction / Cross-Encoder: Comparing Accuracy and Latency with Equations"
+title: "Bi-Encoder, Late Interaction, Cross-Encoder: Comparing Accuracy and Latency"
 description: "This article compares the accuracy and latency of Bi-Encoder, Late Interaction and Cross-Encoder models by where the query and the document interact, that is, by whether the score function factorizes."
 date: 2026-06-13 12:00:00
 lang: en

@@ -140,7 +140,7 @@ Jev は較正を学習目標に含めていて（RLCD）、出荷時点で較正
 
 ## Cross-Encoder としての使い方
 
-[Bi-Encoder / Late Interaction / Cross-Encoder の記事](/blog/ja/bi-late-cross-encoder/)の枠組みでは、Jev の使い方は Cross-Encoder に相当する。クエリと候補を同じ state に入れ、「この候補はクエリに答えているか？」を Noul で問えば、ペアごとのスコアが返る。公式のクックブックは、この方法で BM25の上位30件を再ランキングし、法律文書検索で top-1 精度を5% → 18%、top-10精度を38% → 62%に引き上げている。
+[Bi-Encoder, Late Interaction, Cross-Encoder の記事](/blog/ja/bi-late-cross-encoder/)の枠組みでは、Jev の使い方は Cross-Encoder に相当する。クエリと候補を同じ state に入れ、「この候補はクエリに答えているか？」を Noul で問えば、ペアごとのスコアが返る。公式のクックブックは、この方法で BM25の上位30件を再ランキングし、法律文書検索で top-1 精度を5% → 18%、top-10精度を38% → 62%に引き上げている。
 
 ただし、Cross-Encoder と同じくペアごとに評価が必要なので、コーパス全体に対する1段目の検索には向かない。文書側を事前計算する Bi-Encoder や Late Interaction の役割は代替できない。
 
